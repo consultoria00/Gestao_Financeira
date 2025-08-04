@@ -1,0 +1,1321 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Aptos",sans-serif;}
+.MsoChpDefault
+	{font-size:11.0pt;
+	font-family:"Aptos",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:107%;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 3.0cm 70.85pt 3.0cm;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+
+</head>
+
+<body lang=PT-BR style='word-wrap:break-word'>
+
+<div class=WordSection1>
+
+<p class=MsoNormal>&lt;!DOCTYPE html&gt;</p>
+
+<p class=MsoNormal>&lt;html lang=&quot;pt-BR&quot;&gt;</p>
+
+<p class=MsoNormal>&lt;head&gt;</p>
+
+<p class=MsoNormal>    &lt;meta charset=&quot;UTF-8&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;meta name=&quot;viewport&quot;
+content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;title&gt;Simulador de Custos de Empréstimo -
+PORTUS&lt;/title&gt;</p>
+
+<p class=MsoNormal>    &lt;script
+src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;</p>
+
+<p class=MsoNormal>    &lt;script
+src=&quot;https://cdn.jsdelivr.net/npm/chart.js&quot;&gt;&lt;/script&gt;</p>
+
+<p class=MsoNormal>    &lt;link rel=&quot;preconnect&quot;
+href=&quot;https://fonts.googleapis.com&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;link rel=&quot;preconnect&quot;
+href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;</p>
+
+<p class=MsoNormal>    &lt;link
+href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap&quot;
+rel=&quot;stylesheet&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;!-- Chosen Palette: Corporate Calm --&gt;</p>
+
+<p class=MsoNormal>    &lt;!-- Application Structure Plan: A dashboard-style
+SPA centered around an interactive loan simulator. This structure was chosen to
+transform the passive experience of reading a report into an active,
+exploratory one. The user can immediately see the financial impact of different
+loan scenarios, answering their primary question (&quot;how much does this
+costs me?&quot;) upfront. Detailed textual information from the report is
+organized into accessible tabs below the simulator, reducing initial cognitive
+load while keeping all details available on demand. This serves both executives
+needing a quick overview and participants requiring in-depth information. The
+addition of a full amortization table provides a comprehensive cost overview.
+--&gt;</p>
+
+<p class=MsoNormal>    &lt;!-- Visualization &amp; Content Choices: The core of
+the application is the interactive simulator (Goal: Inform, Compare). Users
+manipulate sliders and dropdowns for loan amount, term, and age. The most
+complex data, the QQM/Taxa de Risco matrix (Goal: Organize, Inform), is handled
+by a JS lookup function, making it easy to understand. The output is shown as
+dynamic text and a Chart.js Donut Chart (Goal: Compare Proportions) visualizing
+the composition of origination fees. This is more effective than a static
+table. The new amortization table (Goal: Compare, Organize, Inform) provides a
+detailed breakdown of each monthly payment, enhancing transparency. Detailed
+text is placed in tabs (Goal: Organize) using JS to show/hide content,
+following the principle of progressive disclosure for a cleaner UI. The
+percentages for each fee are now explicitly displayed for enhanced user
+clarity. --&gt;</p>
+
+<p class=MsoNormal>    &lt;!-- CONFIRMATION: NO SVG graphics used. NO Mermaid
+JS used. --&gt;</p>
+
+<p class=MsoNormal>    &lt;style&gt;</p>
+
+<p class=MsoNormal>        body {</p>
+
+<p class=MsoNormal>            font-family: 'Inter', sans-serif;</p>
+
+<p class=MsoNormal>            background-color: #f8f9fa;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        .tab-button.active {</p>
+
+<p class=MsoNormal>            border-color: #2563eb;</p>
+
+<p class=MsoNormal>            color: #2563eb;</p>
+
+<p class=MsoNormal>            font-weight: 600;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        .chart-container {</p>
+
+<p class=MsoNormal>            position: relative;</p>
+
+<p class=MsoNormal>            width: 100%;</p>
+
+<p class=MsoNormal>            max-width: 400px;</p>
+
+<p class=MsoNormal>            margin-left: auto;</p>
+
+<p class=MsoNormal>            margin-right: auto;</p>
+
+<p class=MsoNormal>            height: 300px;</p>
+
+<p class=MsoNormal>            max-height: 350px;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        @media (min-width: 768px) {</p>
+
+<p class=MsoNormal>            .chart-container {</p>
+
+<p class=MsoNormal>                height: 350px;</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        input[type=range]::-webkit-slider-thumb {</p>
+
+<p class=MsoNormal>            -webkit-appearance: none;</p>
+
+<p class=MsoNormal>            appearance: none;</p>
+
+<p class=MsoNormal>            width: 20px;</p>
+
+<p class=MsoNormal>            height: 20px;</p>
+
+<p class=MsoNormal>            background: #2563eb;</p>
+
+<p class=MsoNormal>            cursor: pointer;</p>
+
+<p class=MsoNormal>            border-radius: 50%;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        input[type=range]::-moz-range-thumb {</p>
+
+<p class=MsoNormal>            width: 20px;</p>
+
+<p class=MsoNormal>            height: 20px;</p>
+
+<p class=MsoNormal>            background: #2563eb;</p>
+
+<p class=MsoNormal>            cursor: pointer;</p>
+
+<p class=MsoNormal>            border-radius: 50%;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        .table-container {</p>
+
+<p class=MsoNormal>            overflow-x: auto;</p>
+
+<p class=MsoNormal>            -webkit-overflow-scrolling: touch; /* smooth
+scrolling on iOS */</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        table {</p>
+
+<p class=MsoNormal>            width: 100%;</p>
+
+<p class=MsoNormal>            border-collapse: collapse;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        th, td {</p>
+
+<p class=MsoNormal>            padding: 8px 12px;</p>
+
+<p class=MsoNormal>            border: 1px solid #e2e8f0;</p>
+
+<p class=MsoNormal>            text-align: right;</p>
+
+<p class=MsoNormal>            white-space: nowrap; /* Prevent wrapping in
+table cells */</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        th {</p>
+
+<p class=MsoNormal>            background-color: #f1f5f9;</p>
+
+<p class=MsoNormal>            font-weight: 600;</p>
+
+<p class=MsoNormal>            text-align: center;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        tbody tr:nth-child(even) {</p>
+
+<p class=MsoNormal>            background-color: #f8fafc;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>    &lt;/style&gt;</p>
+
+<p class=MsoNormal>&lt;/head&gt;</p>
+
+<p class=MsoNormal>&lt;body class=&quot;text-gray-800&quot;&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;div class=&quot;container mx-auto p-4
+md:p-8&quot;&gt;</p>
+
+<p class=MsoNormal>        </p>
+
+<p class=MsoNormal>        &lt;header class=&quot;text-center mb-8&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;h1 class=&quot;text-3xl md:text-4xl
+font-bold text-gray-900&quot;&gt;Estrutura de Custos de Empréstimos
+PORTUS&lt;/h1&gt;</p>
+
+<p class=MsoNormal>            &lt;p class=&quot;mt-2 text-lg
+text-gray-600&quot;&gt;Uma análise interativa dos encargos de
+empréstimo.&lt;/p&gt;</p>
+
+<p class=MsoNormal>        &lt;/header&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        &lt;main&gt;</p>
+
+<p class=MsoNormal>            &lt;section id=&quot;simulator&quot;
+class=&quot;bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-8&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-2xl font-bold mb-6
+text-center&quot;&gt;Simulador Interativo de Custos&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-center text-gray-600
+mb-8&quot;&gt;Ajuste os valores abaixo para entender como os diferentes fatores
+impactam os custos do seu empréstimo. O simulador detalha os encargos cobrados
+no momento da concessão do crédito e a estimativa da primeira parcela
+mensal.&lt;/p&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;grid grid-cols-1
+md:grid-cols-2 gap-8 items-center&quot;&gt;</p>
+
+<p class=MsoNormal>                    </p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;space-y-6&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;div&gt;</p>
+
+<p class=MsoNormal>                            &lt;label
+for=&quot;loanAmount&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Valor do Empréstimo: &lt;span
+id=&quot;loanAmountLabel&quot; class=&quot;font-bold text-blue-600&quot;&gt;R$
+50.000&lt;/span&gt;&lt;/label&gt;</p>
+
+<p class=MsoNormal>                            &lt;input type=&quot;range&quot;
+id=&quot;loanAmount&quot; min=&quot;1000&quot; max=&quot;100000&quot;
+step=&quot;1000&quot; value=&quot;50000&quot; class=&quot;w-full h-2
+bg-gray-200 rounded-lg appearance-none cursor-pointer&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                        </p>
+
+<p class=MsoNormal>                        &lt;div&gt;</p>
+
+<p class=MsoNormal>                            &lt;label
+for=&quot;loanTerm&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Prazo de Amortização&lt;/label&gt;</p>
+
+<p class=MsoNormal>                            &lt;select
+id=&quot;loanTerm&quot; class=&quot;mt-1 block w-full pl-3 pr-10 py-2 text-base
+border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500
+sm:text-sm rounded-md&quot;&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;0&quot;&gt;1 mês&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;1&quot;&gt;6 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;2&quot;&gt;12 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;3&quot;&gt;18 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;4&quot;&gt;24 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;5&quot;&gt;30 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;6&quot;&gt;36 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;7&quot;&gt;42 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;8&quot;&gt;48 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;9&quot;&gt;54 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;10&quot;&gt;60 meses&lt;/option&gt;</p>
+
+<p class=MsoNormal>                            &lt;/select&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                        &lt;div&gt;</p>
+
+<p class=MsoNormal>                            &lt;label
+for=&quot;ageRange&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Faixa Etária&lt;/label&gt;</p>
+
+<p class=MsoNormal>                            &lt;select
+id=&quot;ageRange&quot; class=&quot;mt-1 block w-full pl-3 pr-10 py-2 text-base
+border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500
+sm:text-sm rounded-md&quot;&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;0&quot;&gt;Entre 18 e 59 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;1&quot;&gt;Entre 60 e 64 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;2&quot;&gt;Entre 65 e 69 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;3&quot;&gt;Entre 70 e 74 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;4&quot;&gt;Entre 75 e 79 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                &lt;option
+value=&quot;5&quot;&gt;Acima de 79 anos&lt;/option&gt;</p>
+
+<p class=MsoNormal>                            &lt;/select&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;flex flex-col
+items-center&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;div
+class=&quot;chart-container&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;canvas
+id=&quot;feesChart&quot;&gt;&lt;/canvas&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;text-sm
+text-gray-500 mt-2 text-center&quot;&gt;Composição dos Encargos de
+Originação&lt;/p&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;mt-10 border-t
+pt-8&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;h3 class=&quot;text-xl font-bold
+text-center mb-6&quot;&gt;Resultados da Simulação&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;grid grid-cols-1
+sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-8&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;bg-blue-50 p-4
+rounded-lg&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;p class=&quot;text-sm
+text-blue-800&quot;&gt;Taxa de Aprovação (TAC) &lt;span
+id=&quot;tacPercent&quot; class=&quot;font-bold text-blue-900
+text-xs&quot;&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p class=MsoNormal>                            &lt;p id=&quot;tacValue&quot;
+class=&quot;text-2xl font-bold text-blue-900&quot;&gt;R$ 0,00&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;bg-green-50 p-4
+rounded-lg&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;p class=&quot;text-sm
+text-green-800&quot;&gt;Taxa de Risco (QQM) &lt;span id=&quot;qqmPercent&quot;
+class=&quot;font-bold text-green-900 text-xs&quot;&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p class=MsoNormal>                            &lt;p id=&quot;qqmValue&quot;
+class=&quot;text-2xl font-bold text-green-900&quot;&gt;R$ 0,00&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;bg-yellow-50 p-4
+rounded-lg&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;p class=&quot;text-sm
+text-yellow-800&quot;&gt;IOF &lt;span id=&quot;iofPercent&quot;
+class=&quot;font-bold text-yellow-900 text-xs&quot;&gt;&lt;/span&gt;&lt;/p&gt;</p>
+
+<p class=MsoNormal>                            &lt;p id=&quot;iofValue&quot;
+class=&quot;text-2xl font-bold text-yellow-900&quot;&gt;R$ 0,00&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                         &lt;div class=&quot;bg-red-50 p-4
+rounded-lg&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;p class=&quot;text-sm
+text-red-800&quot;&gt;Total de Encargos Iniciais&lt;/p&gt;</p>
+
+<p class=MsoNormal>                            &lt;p id=&quot;totalFees&quot;
+class=&quot;text-2xl font-bold text-red-900&quot;&gt;R$ 0,00&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;mt-6 bg-gray-100 p-6
+rounded-lg text-center&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;text-lg
+text-gray-700&quot;&gt;Valor Líquido a Receber&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;p id=&quot;netAmount&quot;
+class=&quot;text-4xl font-extrabold text-gray-900&quot;&gt;R$ 0,00&lt;/p&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;mt-10 border-t
+pt-8&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;text-xl font-bold
+text-center mb-6&quot;&gt;Tabela de Amortização Mensal Estimada (Sistema
+SAC)&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;text-center
+text-gray-600 mb-6&quot;&gt;Esta tabela detalha a composição de cada parcela
+mensal, incluindo juros, correção monetária, taxa administrativa, custo total,
+valor amortizado e saldo devedor. O valor do seguro mensal não está incluído
+devido à complexidade de sua determinação.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;table-container
+rounded-lg shadow-md&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;table class=&quot;min-w-full
+bg-white&quot;&gt;</p>
+
+<p class=MsoNormal>                                &lt;thead&gt;</p>
+
+<p class=MsoNormal>                                    &lt;tr&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Parcela&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Valor da Parcela&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Juros&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Correção Monetária&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Taxa Administrativa&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Custo Total&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Valor Amortizado&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                        &lt;th
+class=&quot;py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase
+tracking-wider&quot;&gt;Saldo Devedor&lt;/th&gt;</p>
+
+<p class=MsoNormal>                                    &lt;/tr&gt;</p>
+
+<p class=MsoNormal>                                &lt;/thead&gt;</p>
+
+<p class=MsoNormal>                                &lt;tbody
+id=&quot;amortizationTableBody&quot;&gt;</p>
+
+<p class=MsoNormal>                                    &lt;!-- Rows will be
+dynamically inserted here --&gt;</p>
+
+<p class=MsoNormal>                                &lt;/tbody&gt;</p>
+
+<p class=MsoNormal>                            &lt;/table&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>            &lt;/section&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;section id=&quot;details&quot;
+class=&quot;bg-white p-6 md:p-8 rounded-2xl shadow-lg&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-2xl font-bold mb-6
+text-center&quot;&gt;Detalhamento dos Encargos&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-center text-gray-600
+mb-8&quot;&gt;Selecione uma categoria para ler a explicação detalhada de cada
+componente do custo do seu empréstimo.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;border-b border-gray-200
+mb-6&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;nav class=&quot;-mb-px flex
+justify-center space-x-4 md:space-x-8&quot; aria-label=&quot;Tabs&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;button
+data-tab=&quot;origination&quot; class=&quot;tab-button active
+whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                            Encargos de Originação</p>
+
+<p class=MsoNormal>                        &lt;/button&gt;</p>
+
+<p class=MsoNormal>                        &lt;button
+data-tab=&quot;maintenance&quot; class=&quot;tab-button whitespace-nowrap py-4
+px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700
+hover:border-gray-300 font-medium text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                            Encargos de Manutenção</p>
+
+<p class=MsoNormal>                        &lt;/button&gt;</p>
+
+<p class=MsoNormal>                        &lt;button
+data-tab=&quot;final&quot; class=&quot;tab-button whitespace-nowrap py-4 px-1
+border-b-2 border-transparent text-gray-500 hover:text-gray-700
+hover:border-gray-300 font-medium text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                            Considerações Finais</p>
+
+<p class=MsoNormal>                        &lt;/button&gt;</p>
+
+<p class=MsoNormal>                    &lt;/nav&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                &lt;div id=&quot;tab-content&quot;
+class=&quot;prose max-w-none&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;div
+id=&quot;origination-content&quot; class=&quot;tab-pane&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;Taxa de Aprovação de Crédito (TAC)&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;mb-4&quot;&gt;Este
+encargo financeiro é cobrado no momento da concessão, repactuação ou novação do
+crédito. Sua finalidade é cobrir os custos administrativos e operacionais
+associados à análise, aprovação e formalização do Contrato de Empréstimo. O
+valor corresponde a 0,5% sobre o montante total do contrato. É uma cobrança
+única, realizada no início da operação.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        </p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;Taxa de Risco (QQM - Quota de Quitação por Morte)&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;mb-4&quot;&gt;A
+Taxa de Risco é um encargo destinado à constituição de um Fundo de Quitação por
+Morte (FQM), que garante a liquidação integral do saldo devedor do empréstimo
+em caso de falecimento do mutuário. Este encargo é cobrado em parcela única no
+momento da concessão do crédito. As alíquotas são variáveis, dependendo da
+faixa etária do mutuário e do prazo de amortização do empréstimo.&lt;/p&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;IOF (Imposto sobre Operações Financeiras)&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p&gt;O IOF é um tributo federal
+incidente sobre operações de crédito. No contexto dos empréstimos da PORTUS, é
+aplicado sobre o valor total contratado, conforme a legislação vigente. Sua
+alíquota e metodologia de cálculo são definidas pela Receita Federal do
+Brasil.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;div
+id=&quot;maintenance-content&quot; class=&quot;tab-pane hidden&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;Taxa de Juros Real&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p
+class=&quot;mb-4&quot;&gt;Representa o principal componente de remuneração do
+capital emprestado. A taxa nominal é de 5,21% ao ano, aplicada mensalmente
+sobre o saldo devedor. A definição desta taxa considera a Meta Atuarial dos
+planos de benefícios (INPC + 4,71%), acrescida de 0,48% para cobrir eventuais
+inadimplências e flutuações de mercado, configurando um custo fixo para o
+mutuário durante a amortização.&lt;/p&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;Atualização Monetária&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p class=&quot;mb-4&quot;&gt;Tem
+como objetivo preservar o poder de compra do capital emprestado, corrigindo o
+saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao
+Consumidor (INPC) como indexador, com uma defasagem de dois meses. A adoção do
+INPC visa assegurar consistência com a meta atuarial dos planos de
+benefícios.&lt;/p&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                        &lt;h3 class=&quot;font-bold text-lg
+mb-2&quot;&gt;Taxa de Administração&lt;/h3&gt;</p>
+
+<p class=MsoNormal>                        &lt;p&gt;Encargo mensal para cobrir
+os custos operacionais e de gestão do contrato. A taxa é de 0,41% ao mês
+(equivalente a 5% ao ano) e incide sobre o saldo devedor. Sua correta
+calibração é fundamental para a sustentabilidade da operação de
+empréstimos.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;div id=&quot;final-content&quot;
+class=&quot;tab-pane hidden&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;p&gt;É de suma importância que
+os mutuários da PORTUS compreendam integralmente a estrutura da taxa de juros e
+os encargos incidentes. A transparência na apresentação dessas informações é
+crucial para que o mutuário possa tomar decisões financeiras conscientes. As
+taxas e encargos aqui apresentados podem sofrer alterações, em conformidade com
+o Contrato de Abertura de Crédito e o Regulamento de Empréstimos. Eventuais
+modificações nas condições serão realizadas a critério da Diretoria Executiva
+da PORTUS ou em função de alterações na legislação aplicável. Recomenda-se que
+os mutuários consultem sempre os documentos oficiais da PORTUS e, em caso de
+dúvidas, busquem esclarecimentos junto aos canais de atendimento da
+instituição.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>            &lt;/section&gt;</p>
+
+<p class=MsoNormal>        &lt;/main&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        &lt;footer class=&quot;text-center mt-12 py-4
+border-t&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;p class=&quot;text-sm
+text-gray-500&quot;&gt;&amp;copy; 2025 PORTUS. Todos os direitos
+reservados.&lt;/p&gt;</p>
+
+<p class=MsoNormal>        &lt;/footer&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;script&gt;</p>
+
+<p class=MsoNormal>        const loanAmountInput =
+document.getElementById('loanAmount');</p>
+
+<p class=MsoNormal>        const loanAmountLabel =
+document.getElementById('loanAmountLabel');</p>
+
+<p class=MsoNormal>        const loanTermSelect =
+document.getElementById('loanTerm');</p>
+
+<p class=MsoNormal>        const ageRangeSelect =
+document.getElementById('ageRange');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const tacValueEl =
+document.getElementById('tacValue');</p>
+
+<p class=MsoNormal>        const qqmValueEl =
+document.getElementById('qqmValue');</p>
+
+<p class=MsoNormal>        const iofValueEl =
+document.getElementById('iofValue');</p>
+
+<p class=MsoNormal>        const totalFeesEl =
+document.getElementById('totalFees');</p>
+
+<p class=MsoNormal>        const netAmountEl =
+document.getElementById('netAmount');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const tacPercentEl =
+document.getElementById('tacPercent');</p>
+
+<p class=MsoNormal>        const qqmPercentEl =
+document.getElementById('qqmPercent');</p>
+
+<p class=MsoNormal>        const iofPercentEl =
+document.getElementById('iofPercent');</p>
+
+<p class=MsoNormal>        // Removidas referências a interestAdminPercentEl e
+correctionPercentEl pois não existem mais no HTML</p>
+
+<p class=MsoNormal>        // const interestAdminPercentEl =
+document.getElementById('interestAdminPercent');</p>
+
+<p class=MsoNormal>        // const correctionPercentEl =
+document.getElementById('correctionPercent');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const amortizationTableBody =
+document.getElementById('amortizationTableBody');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const tabButtons =
+document.querySelectorAll('.tab-button');</p>
+
+<p class=MsoNormal>        const tabPanes =
+document.querySelectorAll('.tab-pane');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const formatCurrency = (value) =&gt; {</p>
+
+<p class=MsoNormal>            return new Intl.NumberFormat('pt-BR', { style:
+'currency', currency: 'BRL' }).format(value);</p>
+
+<p class=MsoNormal>        };</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const formatPercent = (value) =&gt; {</p>
+
+<p class=MsoNormal>            return new Intl.NumberFormat('pt-BR', { style:
+'percent', minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(value);</p>
+
+<p class=MsoNormal>        };</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const qqmRates = [</p>
+
+<p class=MsoNormal>            [0.0006909, 0.002947, 0.004919, 0.008315,
+0.013507, 0.028696],</p>
+
+<p class=MsoNormal>            [0.001630, 0.006978, 0.011681, 0.019614,
+0.031662, null],</p>
+
+<p class=MsoNormal>            [0.002204, 0.009466, 0.015874, 0.026524, null,
+null],</p>
+
+<p class=MsoNormal>            [0.003176, 0.013719, 0.023043, null, null,
+null],</p>
+
+<p class=MsoNormal>            [0.004468, 0.019470, null, null, null, null],</p>
+
+<p class=MsoNormal>            [0.005797, null, null, null, null, null]</p>
+
+<p class=MsoNormal>        ];</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        // Mapeamento do índice do prazo para o número real
+de meses</p>
+
+<p class=MsoNormal>        const actualMonths = [1, 6, 12, 18, 24, 30, 36, 42,
+48, 54, 60]; </p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        const tacRate = 0.005; // 0.5%</p>
+
+<p class=MsoNormal>        const iofRate = 0.0038; // 0.38%</p>
+
+<p class=MsoNormal>        const monthlyInterestRate = 0.0042; // 0.42% a.m. -
+Taxa de Juros Real</p>
+
+<p class=MsoNormal>        const monthlyAdminRate = 0.0041; // 0.41% a.m. -
+Taxa de Administração</p>
+
+<p class=MsoNormal>        const monthlyINPCRate = 0.0041; // 0.41% a.m. - INPC
+fixo conforme solicitação</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        let feesChart;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        function initializeChart() {</p>
+
+<p class=MsoNormal>            const ctx =
+document.getElementById('feesChart').getContext('2d');</p>
+
+<p class=MsoNormal>            feesChart = new Chart(ctx, {</p>
+
+<p class=MsoNormal>                type: 'doughnut',</p>
+
+<p class=MsoNormal>                data: {</p>
+
+<p class=MsoNormal>                    labels: ['TAC', 'QQM', 'IOF'],</p>
+
+<p class=MsoNormal>                    datasets: [{</p>
+
+<p class=MsoNormal>                        data: [0, 0, 0],</p>
+
+<p class=MsoNormal>                        backgroundColor: ['#3b82f6',
+'#10b981', '#f59e0b'],</p>
+
+<p class=MsoNormal>                        borderColor: '#ffffff',</p>
+
+<p class=MsoNormal>                        borderWidth: 2,</p>
+
+<p class=MsoNormal>                    }]</p>
+
+<p class=MsoNormal>                },</p>
+
+<p class=MsoNormal>                options: {</p>
+
+<p class=MsoNormal>                    responsive: true,</p>
+
+<p class=MsoNormal>                    maintainAspectRatio: false,</p>
+
+<p class=MsoNormal>                    cutout: '60%',</p>
+
+<p class=MsoNormal>                    plugins: {</p>
+
+<p class=MsoNormal>                        legend: {</p>
+
+<p class=MsoNormal>                            position: 'bottom',</p>
+
+<p class=MsoNormal>                        },</p>
+
+<p class=MsoNormal>                        tooltip: {</p>
+
+<p class=MsoNormal>                            callbacks: {</p>
+
+<p class=MsoNormal>                                label: function(context) {</p>
+
+<p class=MsoNormal>                                    let label =
+context.label || '';</p>
+
+<p class=MsoNormal>                                    if (label) {</p>
+
+<p class=MsoNormal>                                        label += ': ';</p>
+
+<p class=MsoNormal>                                    }</p>
+
+<p class=MsoNormal>                                    if (context.parsed !==
+null) {</p>
+
+<p class=MsoNormal>                                        label +=
+formatCurrency(context.parsed);</p>
+
+<p class=MsoNormal>                                    }</p>
+
+<p class=MsoNormal>                                    return label;</p>
+
+<p class=MsoNormal>                                }</p>
+
+<p class=MsoNormal>                            }</p>
+
+<p class=MsoNormal>                        }</p>
+
+<p class=MsoNormal>                    }</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            });</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        function calculatePMT(principal, monthlyRate,
+numPayments) {</p>
+
+<p class=MsoNormal>            if (monthlyRate === 0) return principal /
+numPayments;</p>
+
+<p class=MsoNormal>            return principal * (monthlyRate * Math.pow(1 +
+monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        // Função para mapear o número de meses para o
+índice correto da matriz qqmRates</p>
+
+<p class=MsoNormal>        function getQqmTermIndex(numMonths) {</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 1 &amp;&amp; numMonths &lt;=
+12) return 0;</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 13 &amp;&amp; numMonths
+&lt;= 18) return 1;</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 19 &amp;&amp; numMonths
+&lt;= 24) return 2;</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 25 &amp;&amp; numMonths
+&lt;= 36) return 3;</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 37 &amp;&amp; numMonths
+&lt;= 48) return 4;</p>
+
+<p class=MsoNormal>            if (numMonths &gt;= 49 &amp;&amp; numMonths
+&lt;= 60) return 5;</p>
+
+<p class=MsoNormal>            return -1; // Retorna -1 para casos não
+mapeados, embora as opções de dropdown devam cobrir todos</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        function updateSimulation() {</p>
+
+<p class=MsoNormal>            const amount =
+parseFloat(loanAmountInput.value);</p>
+
+<p class=MsoNormal>            const termIndex =
+parseInt(loanTermSelect.value);</p>
+
+<p class=MsoNormal>            const ageIndex = parseInt(ageRangeSelect.value);</p>
+
+<p class=MsoNormal>            const numMonths = actualMonths[termIndex];</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            loanAmountLabel.textContent =
+formatCurrency(amount);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Cálculos dos Encargos de Originação</p>
+
+<p class=MsoNormal>            const tacValue = amount * tacRate;</p>
+
+<p class=MsoNormal>            const iofValue = amount * iofRate;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Calcular o valor base para QQM após deduzir
+TAC e IOF</p>
+
+<p class=MsoNormal>            const baseAmountForQqm = amount - tacValue -
+iofValue;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            const qqmTermArrayIndex =
+getQqmTermIndex(numMonths); </p>
+
+<p class=MsoNormal>            </p>
+
+<p class=MsoNormal>            let qqmValue = 0;</p>
+
+<p class=MsoNormal>            let currentQqmPercent = 0;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            if (qqmTermArrayIndex !== -1 &amp;&amp;
+qqmRates[qqmTermArrayIndex] &amp;&amp; qqmRates[qqmTermArrayIndex][ageIndex]
+!== null) {</p>
+
+<p class=MsoNormal>                currentQqmPercent =
+qqmRates[qqmTermArrayIndex][ageIndex];</p>
+
+<p class=MsoNormal>                qqmValue = baseAmountForQqm *
+currentQqmPercent;</p>
+
+<p class=MsoNormal>            } else {</p>
+
+<p class=MsoNormal>                qqmValue = 0;</p>
+
+<p class=MsoNormal>                currentQqmPercent = 0;</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>            </p>
+
+<p class=MsoNormal>            const totalFees = tacValue + qqmValue +
+iofValue;</p>
+
+<p class=MsoNormal>            const netAmount = amount - totalFees;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            tacValueEl.textContent =
+formatCurrency(tacValue);</p>
+
+<p class=MsoNormal>            qqmValueEl.textContent =
+formatCurrency(qqmValue);</p>
+
+<p class=MsoNormal>            iofValueEl.textContent =
+formatCurrency(iofValue);</p>
+
+<p class=MsoNormal>            totalFeesEl.textContent =
+formatCurrency(totalFees);</p>
+
+<p class=MsoNormal>            netAmountEl.textContent =
+formatCurrency(netAmount);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Exibir percentuais</p>
+
+<p class=MsoNormal>            tacPercentEl.textContent =
+`(${formatPercent(tacRate)})`;</p>
+
+<p class=MsoNormal>            qqmPercentEl.textContent =
+`(${formatPercent(currentQqmPercent)})`;</p>
+
+<p class=MsoNormal>            iofPercentEl.textContent =
+`(${formatPercent(iofRate)})`;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            updateChartData(tacValue, qqmValue, iofValue);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Cálculos da Tabela de Amortização (Sistema
+SAC)</p>
+
+<p class=MsoNormal>            amortizationTableBody.innerHTML = ''; // Limpa a
+tabela antes de preencher</p>
+
+<p class=MsoNormal>            </p>
+
+<p class=MsoNormal>            let currentSaldoDevedor = netAmount;</p>
+
+<p class=MsoNormal>            const constantAmortization = netAmount /
+numMonths; // Amortização constante do principal</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            for (let i = 1; i &lt;= numMonths; i++) {</p>
+
+<p class=MsoNormal>                // 1. Calcular Correção Monetária sobre o
+saldo devedor inicial do mês</p>
+
+<p class=MsoNormal>                let correcaoMes = currentSaldoDevedor *
+monthlyINPCRate;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // 2. Saldo devedor atualizado pela correção
+monetária para cálculo de Juros</p>
+
+<p class=MsoNormal>                let saldoDevedorCorrigidoParaJuros =
+currentSaldoDevedor + correcaoMes;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // 3. Calcular Juros sobre o saldo devedor
+corrigido</p>
+
+<p class=MsoNormal>                let jurosMes =
+saldoDevedorCorrigidoParaJuros * monthlyInterestRate;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // 4. Calcular Taxa Administrativa sobre o
+saldo devedor original do mês (currentSaldoDevedor)</p>
+
+<p class=MsoNormal>                let adminMes = currentSaldoDevedor *
+monthlyAdminRate; // Ajuste aqui!</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // 5. Custo Total do mês (Juros + Correção
+Monetária + Taxa Administrativa)</p>
+
+<p class=MsoNormal>                let custoTotalMes = jurosMes + correcaoMes +
+adminMes;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                let valorAmortizado = constantAmortization;</p>
+
+<p class=MsoNormal>                let valorParcela = valorAmortizado +
+custoTotalMes;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // Ajuste para a última parcela para
+garantir que o saldo devedor seja zero</p>
+
+<p class=MsoNormal>                if (i === numMonths) {</p>
+
+<p class=MsoNormal>                    valorAmortizado = currentSaldoDevedor;
+// Amortiza o restante do principal</p>
+
+<p class=MsoNormal>                    // Recalcula os custos para a última
+parcela com o saldo final</p>
+
+<p class=MsoNormal>                    jurosMes = (currentSaldoDevedor +
+(currentSaldoDevedor * monthlyINPCRate)) * monthlyInterestRate; // Juros sobre
+saldo corrigido final</p>
+
+<p class=MsoNormal>                    correcaoMes = currentSaldoDevedor *
+monthlyINPCRate;</p>
+
+<p class=MsoNormal>                    adminMes = currentSaldoDevedor *
+monthlyAdminRate; // Admin sobre saldo original final</p>
+
+<p class=MsoNormal>                    custoTotalMes = jurosMes + correcaoMes +
+adminMes;</p>
+
+<p class=MsoNormal>                    valorParcela = valorAmortizado +
+custoTotalMes; // Ajusta a parcela final</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                currentSaldoDevedor -= valorAmortizado;</p>
+
+<p class=MsoNormal>                // Garante que o saldo não seja negativo
+devido a imprecisões de ponto flutuante</p>
+
+<p class=MsoNormal>                if (currentSaldoDevedor &lt; 0.01 &amp;&amp;
+i === numMonths) { // Pequena tolerância para zero</p>
+
+<p class=MsoNormal>                    currentSaldoDevedor = 0;</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                const row =
+amortizationTableBody.insertRow();</p>
+
+<p class=MsoNormal>                row.insertCell().textContent = i;</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(valorParcela);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(jurosMes);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(correcaoMes);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(adminMes);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(custoTotalMes);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(valorAmortizado);</p>
+
+<p class=MsoNormal>                row.insertCell().textContent =
+formatCurrency(currentSaldoDevedor);</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        function updateChartData(tac, qqm, iof) {</p>
+
+<p class=MsoNormal>            feesChart.data.datasets[0].data = [tac, qqm,
+iof];</p>
+
+<p class=MsoNormal>            feesChart.update();</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        </p>
+
+<p class=MsoNormal>        function handleTabClick(event) {</p>
+
+<p class=MsoNormal>            const clickedTab = event.currentTarget;</p>
+
+<p class=MsoNormal>            const tabName = clickedTab.dataset.tab;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            tabButtons.forEach(button =&gt; {</p>
+
+<p class=MsoNormal>                button.classList.remove('active');</p>
+
+<p class=MsoNormal>            });</p>
+
+<p class=MsoNormal>            clickedTab.classList.add('active');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            tabPanes.forEach(pane =&gt; {</p>
+
+<p class=MsoNormal>                if (pane.id === `${tabName}-content`) {</p>
+
+<p class=MsoNormal>                    pane.classList.remove('hidden');</p>
+
+<p class=MsoNormal>                } else {</p>
+
+<p class=MsoNormal>                    pane.classList.add('hidden');</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            });</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        loanAmountInput.addEventListener('input',
+updateSimulation);</p>
+
+<p class=MsoNormal>        loanTermSelect.addEventListener('change',
+updateSimulation);</p>
+
+<p class=MsoNormal>        ageRangeSelect.addEventListener('change',
+updateSimulation);</p>
+
+<p class=MsoNormal>        </p>
+
+<p class=MsoNormal>        tabButtons.forEach(button =&gt;
+button.addEventListener('click', handleTabClick));</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        document.addEventListener('DOMContentLoaded', ()
+=&gt; {</p>
+
+<p class=MsoNormal>            initializeChart();</p>
+
+<p class=MsoNormal>            updateSimulation();</p>
+
+<p class=MsoNormal>        });</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;/script&gt;</p>
+
+<p class=MsoNormal>&lt;/body&gt;</p>
+
+<p class=MsoNormal>&lt;/html&gt;</p>
+
+</div>
+
+</body>
+
+</html>
