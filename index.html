@@ -9,10 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Corporate Calm -->
-    <!-- Application Structure Plan: A dashboard-style SPA centered around an interactive loan simulator. This structure was chosen to transform the passive experience of reading a report into an active, exploratory one. The user can immediately see the financial impact of different loan scenarios, answering their primary question ("how much does this costs me?") upfront. Detailed textual information from the report is organized into accessible tabs below the simulator, reducing initial cognitive load while keeping all details available on demand. This serves both executives needing a quick overview and participants requiring in-depth information. The addition of a full amortization table provides a comprehensive cost overview. -->
-    <!-- Visualization & Content Choices: The core of the application is the interactive simulator (Goal: Inform, Compare). Users manipulate sliders and dropdowns for loan amount, term, and age. The most complex data, the QQM/Taxa de Risco matrix (Goal: Organize, Inform), is handled by a JS lookup function, making it easy to understand. The output is shown as dynamic text and a Chart.js Donut Chart (Goal: Compare Proportions) visualizing the composition of origination fees. This is more effective than a static table. The new amortization table (Goal: Compare, Organize, Inform) provides a detailed breakdown of each monthly payment, enhancing transparency. Detailed text is placed in tabs (Goal: Organize) using JS to show/hide content, following the principle of progressive disclosure for a cleaner UI. The percentages for each fee are now explicitly displayed for enhanced user clarity. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -65,12 +61,11 @@
             padding: 8px 12px;
             border: 1px solid #e2e8f0;
             text-align: right;
-            /* white-space: nowrap; REMOVIDO: Permitir quebra de linha para melhor adaptação */
         }
         th {
             background-color: #f1f5f9;
             font-weight: 600;
-            text-align: center; /* Centraliza o texto do cabeçalho */
+            text-align: center;
         }
         tbody tr:nth-child(even) {
             background-color: #f8fafc;
@@ -87,7 +82,6 @@
         </header>
 
         <main>
-            <!-- SIMULATOR AND DETAILS VIEW (COMBINED) -->
             <section id="simulator" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-8">
                 <h2 class="text-2xl font-bold mb-6 text-center">Simulador Interativo de Custos</h2>
                 <p class="text-center text-gray-600 mb-8">Ajuste os valores abaixo para entender como os diferentes fatores impactam os custos do seu empréstimo.</p>
@@ -96,8 +90,8 @@
                     
                     <div class="space-y-6">
                         <div>
-                            <label for="loanAmount" class="block text-sm font-medium text-gray-700">Valor do Empréstimo: <span id="loanAmountLabel" class="font-bold text-blue-600">R$ 50.000</span></label>
-                            <input type="range" id="loanAmount" min="1000" max="100000" step="1000" value="50000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <label for="netAmountInput" class="block text-sm font-medium text-gray-700">Valor Líquido Desejado: <span id="netAmountLabel" class="font-bold text-blue-600">R$ 50.000</span></label>
+                            <input type="range" id="netAmountInput" min="1000" max="100000" step="1000" value="50000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                         </div>
                         
                         <div>
@@ -130,43 +124,115 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col items-center">
-                        <div class="chart-container">
-                            <canvas id="feesChart"></canvas>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg text-center border border-blue-200">
+                            <p class="text-lg font-medium text-blue-800">Valor Líquido Desejado</p>
+                            <p id="summaryNetAmountEl" class="text-3xl md:text-4xl font-bold text-blue-900">R$ 0,00</p>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2 text-center">Composição dos Encargos de Originação</p>
+                        <div class="bg-gray-800 text-white p-4 rounded-lg text-center">
+                            <p class="text-lg font-medium text-gray-300">Valor Bruto do Contrato</p>
+                            <p id="grossAmountEl" class="text-3xl md:text-4xl font-bold">R$ 0,00</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mt-10 border-t pt-8">
                     <h3 class="text-xl font-bold text-center mb-6">Resultados da Simulação</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-8">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <p class="text-sm text-blue-800">Taxa de Aprovação - TAC <span id="tacPercent" class="font-bold text-blue-900 text-xs"></span></p>
-                            <p id="tacValue" class="text-2xl font-bold text-blue-900">R$ 0,00</p>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg">
-                            <p class="text-sm text-green-800">Taxa de Risco - QQM <span id="qqmPercent" class="font-bold text-green-900 text-xs"></span></p>
-                            <p id="qqmValue" class="text-2xl font-bold text-green-900">R$ 0,00</p>
-                            <p id="qqmEligibilityMessage" class="text-xs text-red-600 mt-1 hidden">Não Elegível ao Empréstimo</p>
-                        </div>
-                        <div class="bg-yellow-50 p-4 rounded-lg">
-                            <p class="text-sm text-yellow-800">IOF <span id="iofPercent" class="font-bold text-yellow-900 text-xs"></span></p>
-                            <p id="iofValue" class="text-2xl font-bold text-yellow-900">R$ 0,00</p>
-                        </div>
-                         <div class="bg-red-50 p-4 rounded-lg">
-                            <p class="text-sm text-red-800">Total de Encargos Iniciais</p>
-                            <p id="totalFees" class="text-2xl font-bold text-red-900">R$ 0,00</p>
+                    
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center md:text-left">Encargos de Originação</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <p class="text-sm text-blue-800">Taxa de Aprovação - TAC <span id="tacPercent" class="font-bold text-blue-900 text-xs"></span></p>
+                                <p id="tacValue" class="text-2xl font-bold text-blue-900">R$ 0,00</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <p class="text-sm text-purple-800">Taxa de Risco - QQM <span id="qqmPercent" class="font-bold text-purple-900 text-xs"></span></p>
+                                <p id="qqmValue" class="text-2xl font-bold text-purple-900">R$ 0,00</p>
+                                <p id="qqmEligibilityMessage" class="text-xs text-red-600 mt-1 hidden">Não Elegível</p>
+                            </div>
+                            <div class="bg-indigo-50 p-4 rounded-lg">
+                                <p class="text-sm text-indigo-800">IOF <span id="iofPercent" class="font-bold text-indigo-900 text-xs"></span></p>
+                                <p id="iofValue" class="text-2xl font-bold text-indigo-900">R$ 0,00</p>
+                            </div>
+                             <div class="bg-orange-50 p-4 rounded-lg">
+                                <p class="text-sm text-orange-800">Total de Originação</p>
+                                <p id="totalOriginationFees" class="text-2xl font-bold text-orange-900">R$ 0,00</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-6 bg-gray-100 p-6 rounded-lg text-center">
-                        <p class="text-lg text-gray-700">Valor Líquido a Receber</p>
-                        <p id="netAmount" class="text-4xl font-extrabold text-gray-900">R$ 0,00</p>
+
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center md:text-left">Encargos de Manutenção (Estimativa Total no Período)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                 <p class="text-sm text-green-800">Total Juros</p>
+                                 <p id="totalInterestValue" class="text-2xl font-bold text-green-900">R$ 0,00</p>
+                            </div>
+                            <div class="bg-amber-50 p-4 rounded-lg">
+                                 <p class="text-sm text-amber-800">Total Correção Monetária</p>
+                                 <p id="totalInflationValue" class="text-2xl font-bold text-amber-900">R$ 0,00</p>
+                            </div>
+                            <div class="bg-cyan-50 p-4 rounded-lg">
+                                 <p class="text-sm text-cyan-800">Total Taxa Admin.</p>
+                                 <p id="totalAdminFeeValue" class="text-2xl font-bold text-cyan-900">R$ 0,00</p>
+                            </div>
+                            <div class="bg-orange-50 p-4 rounded-lg">
+                                <p class="text-sm text-orange-800">Total de Manutenção</p>
+                                <p id="totalMaintenanceFees" class="text-2xl font-bold text-orange-900">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10">
+                         <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center">Composição Detalhada dos Encargos</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div class="chart-container">
+                                <canvas id="costsChart"></canvas>
+                            </div>
+                            <div class="bg-orange-50 p-6 rounded-lg text-center">
+                                <p class="text-xl font-medium text-orange-800">Total de Encargos</p>
+                                <p id="totalAllFeesValue" class="text-4xl md:text-5xl font-bold text-orange-900">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="financial-indicators-section" class="mt-10 border-t pt-8">
+                        <h3 class="text-xl font-bold text-center mb-6">Indicadores Financeiros</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="text-center">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Custo para o Mutuário (CET)</h4>
+                                <p class="text-gray-600 mb-4 text-sm">Custo total da operação para quem toma o empréstimo, considerando o valor líquido recebido vs. parcelas pagas.</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-purple-50 p-4 rounded-lg">
+                                        <p class="text-sm text-purple-800">CET a.m.</p>
+                                        <p id="cetMonthly" class="text-2xl font-bold text-purple-900">0,00%</p>
+                                    </div>
+                                    <div class="bg-purple-50 p-4 rounded-lg">
+                                        <p class="text-sm text-purple-800">CET a.a.</p>
+                                        <p id="cetAnnual" class="text-2xl font-bold text-purple-900">0,00%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Rentabilidade para o Concessor (TIR)</h4>
+                                <p class="text-gray-600 mb-4 text-sm">Retorno da operação, considerando o valor bruto desembolsado vs. as parcelas recebidas (descontada a taxa de adm.).</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-indigo-50 p-4 rounded-lg">
+                                        <p class="text-sm text-indigo-800">TIR a.m.</p>
+                                        <p id="lenderTirMonthly" class="text-2xl font-bold text-indigo-900">0,00%</p>
+                                    </div>
+                                    <div class="bg-indigo-50 p-4 rounded-lg">
+                                        <p class="text-sm text-indigo-800">TIR a.a.</p>
+                                        <p id="lenderTirAnnual" class="text-2xl font-bold text-indigo-900">0,00%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- DETAILS SECTION (NOW PART OF THE MAIN FLOW) -->
             <section id="details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mt-8">
                 <h3 class="text-xl font-bold text-center mb-6">Tabela de Amortização Mensal Estimada (Sistema SAC)</h3>
                 <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, custo total, valor amortizado e saldo devedor. </p>
@@ -185,7 +251,6 @@
                             </tr>
                         </thead>
                         <tbody id="amortizationTableBody">
-                            <!-- Rows will be dynamically inserted here -->
                         </tbody>
                     </table>
                 </div>
@@ -199,9 +264,6 @@
                         </button>
                         <button data-tab="maintenance" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
                             Encargos de Manutenção
-                        </button>
-                        <button data-tab="financial-indicators" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
-                            Indicadores Financeiros
                         </button>
                         <button data-tab="final" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
                             Considerações Finais
@@ -225,37 +287,10 @@
                         <p class="mb-4">Representa o principal componente de remuneração do capital emprestado. A taxa nominal é de 5,21% ao ano, aplicada mensalmente sobre o saldo devedor. A definição desta taxa considera a Meta Atuarial dos planos de benefícios (INPC + 4,71%), acrescida de 0,48% para cobrir eventuais inadimplências e flutuações de mercado, configurando um custo fixo para o mutuário durante a amortização.</p>
 
                         <h3 class="font-bold text-lg mb-2">Atualização Monetária</h3>
-                        <p class="mb-4">Tem como objetivo preservar o poder de compra do capital emprestado, corrigindo o saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao Consumidor (INPC) como indexador, com uma defasagem de dois meses. A adoção do INPC visa assegurar consistência com a meta atuarial dos planos de benefícios.</p>
+                        <p class="mb-4">Tem como objetivo preservar o poder de compra do capital emprestado, corrigindo o saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao Consumidor (INPC) as indexador, com uma defasagem de dois meses. A adoção do INPC visa assegurar consistência com a meta atuarial dos planos de benefícios.</p>
 
                         <h3 class="font-bold text-lg mb-2">Taxa de Administração</h3>
                         <p>Encargo mensal para cobrir os custos operacionais e de gestão do contrato. A taxa é de 0,41% ao mês (equivalente a 5% ao ano) e incide sobre o saldo devedor. Sua correta calibração é fundamental para a sustentabilidade da operação de empréstimos.</p>
-                    </div>
-                    <div id="financial-indicators-content" class="tab-pane hidden">
-                        <h3 class="font-bold text-lg mb-2">Custo Efetivo Total (CET)</h3>
-                        <p class="mb-4">O Custo Efetivo Total (CET) representa o custo total de um empréstimo para o mutuário, expresso como uma taxa percentual anual. Ele engloba todos os encargos e despesas incidentes na operação, como juros, tarifas, impostos (IOF) e seguros, oferecendo uma visão clara do valor real que será pago. O CET é uma ferramenta essencial para comparar diferentes ofertas de crédito, pois padroniza a forma de apresentação dos custos.</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center mb-8">
-                            <div class="bg-purple-50 p-4 rounded-lg">
-                                <p class="text-sm text-purple-800">CET a.m.</p>
-                                <p id="cetMonthly" class="text-2xl font-bold text-purple-900">0,00%</p>
-                            </div>
-                            <div class="bg-purple-50 p-4 rounded-lg">
-                                <p class="text-sm text-purple-800">CET a.a.</p>
-                                <p id="cetAnnual" class="text-2xl font-bold text-purple-900">0,00%</p>
-                            </div>
-                        </div>
-
-                        <h3 class="font-bold text-lg mb-2">Taxa Interna de Retorno (TIR)</h3>
-                        <p>A Taxa Interna de Retorno (TIR), no contexto de um empréstimo, é a taxa de desconto que iguala o valor presente dos fluxos de caixa de entrada (o valor líquido do empréstimo recebido) ao valor presente dos fluxos de caixa de saída (as parcelas pagas). Essencialmente, a TIR é a taxa de juros efetiva do empréstimo, considerando todos os pagamentos ao longo do tempo. É uma métrica importante para avaliar a rentabilidade de um investimento ou o custo de um financiamento.</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
-                            <div class="bg-indigo-50 p-4 rounded-lg">
-                                <p class="text-sm text-indigo-800">TIR a.m.</p>
-                                <p id="tirMonthly" class="text-2xl font-bold text-indigo-900">0,00%</p>
-                            </div>
-                            <div class="bg-indigo-50 p-4 rounded-lg">
-                                <p class="text-sm text-indigo-800">TIR a.a.</p>
-                                <p id="tirAnnual" class="text-2xl font-bold text-indigo-900">0,00%</p>
-                            </div>
-                        </div>
                     </div>
                     <div id="final-content" class="tab-pane hidden">
                         <p>É de suma importância que os mutuários da PORTUS compreendam integralmente a estrutura da taxa de juros e os encargos incidentes. A transparência na apresentação dessas informações é crucial para que o mutuário possa tomar decisões financeiras conscientes. As taxas e encargos aqui apresentados podem sofrer alterações, em conformidade com o Contrato de Abertura de Crédito e o Regulamento de Empréstimos. Eventuais modificações nas condições serão realizadas a critério da Diretoria Executiva da PORTUS ou em função de alterações na legislação aplicável. Recomenda-se que os mutuários consultem sempre os documentos oficiais da PORTUS e, em caso de dúvidas, busquem esclarecimentos junto aos canais de atendimento da instituição.</p>
@@ -271,41 +306,49 @@
     </div>
 
     <script>
-        const loanAmountInput = document.getElementById('loanAmount');
-        const loanAmountLabel = document.getElementById('loanAmountLabel');
+        // --- ELEMENT REFERENCES ---
+        const netAmountInput = document.getElementById('netAmountInput');
+        const netAmountLabel = document.getElementById('netAmountLabel');
         const loanTermSelect = document.getElementById('loanTerm');
         const ageRangeSelect = document.getElementById('ageRange');
 
         const tacValueEl = document.getElementById('tacValue');
         const qqmValueEl = document.getElementById('qqmValue');
         const iofValueEl = document.getElementById('iofValue');
-        const totalFeesEl = document.getElementById('totalFees');
-        const netAmountEl = document.getElementById('netAmount');
+        const totalOriginationFeesEl = document.getElementById('totalOriginationFees');
+        const grossAmountEl = document.getElementById('grossAmountEl');
+        const summaryNetAmountEl = document.getElementById('summaryNetAmountEl');
+        const totalAllFeesValueEl = document.getElementById('totalAllFeesValue');
 
         const tacPercentEl = document.getElementById('tacPercent');
         const qqmPercentEl = document.getElementById('qqmPercent');
         const iofPercentEl = document.getElementById('iofPercent');
         const qqmEligibilityMessageEl = document.getElementById('qqmEligibilityMessage'); 
 
+        const totalInterestValueEl = document.getElementById('totalInterestValue');
+        const totalInflationValueEl = document.getElementById('totalInflationValue');
+        const totalAdminFeeValueEl = document.getElementById('totalAdminFeeValue');
+        const totalMaintenanceFeesEl = document.getElementById('totalMaintenanceFees');
+
         const cetMonthlyEl = document.getElementById('cetMonthly'); 
         const cetAnnualEl = document.getElementById('cetAnnual');   
-        const tirMonthlyEl = document.getElementById('tirMonthly'); 
-        const tirAnnualEl = document.getElementById('tirAnnual');   
-
+        const lenderTirMonthlyEl = document.getElementById('lenderTirMonthly');
+        const lenderTirAnnualEl = document.getElementById('lenderTirAnnual');
 
         const amortizationTableBody = document.getElementById('amortizationTableBody');
-
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabPanes = document.querySelectorAll('.tab-pane');
 
+        // --- FORMATTERS ---
         const formatCurrency = (value) => {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         };
 
         const formatPercent = (value) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(value);
+            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
         };
 
+        // --- CONSTANTS AND RATES ---
         const qqmRates = [
             [0.0006909, 0.002947, 0.004919, 0.008315, 0.013507, 0.028696],
             [0.001630, 0.006978, 0.011681, 0.019614, 0.031662, null],
@@ -314,50 +357,101 @@
             [0.004468, 0.019470, null, null, null, null],
             [0.005797, null, null, null, null, null]
         ];
-
-        // Mapeamento do índice do prazo para o número real de meses
         const actualMonths = [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]; 
-
         const tacRate = 0.005; // 0.5%
         const iofRate = 0.0038; // 0.38%
         const monthlyInterestRate = 0.0042; // 0.42% a.m. - Taxa de Juros Real
         const monthlyAdminRate = 0.0041; // 0.41% a.m. - Taxa de Administração
         const monthlyINPCRate = 0.0041; // 0.41% a.m. - INPC fixo conforme solicitação
 
-        let feesChart;
+        let costsChart;
 
+        // --- CHART INITIALIZATION ---
         function initializeChart() {
-            const ctx = document.getElementById('feesChart').getContext('2d');
-            feesChart = new Chart(ctx, {
+            const ctx = document.getElementById('costsChart').getContext('2d');
+            costsChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['TAC', 'QQM', 'IOF'],
+                    labels: ['Juros', 'Correção Monetária', 'Taxa Admin.', 'TAC', 'QQM', 'IOF'],
                     datasets: [{
-                        data: [0, 0, 0],
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
-                        borderColor: '#ffffff',
+                        label: 'Encargos de Manutenção',
+                        data: [0, 0, 0], // Juros, Correção, Admin
+                        backgroundColor: ['#a7f3d0', '#fde68a', '#a5f3fc'], // Pastel Green, Amber, Cyan
+                        borderColor: '#f8f9fa',
                         borderWidth: 2,
+                    }, {
+                        label: 'Encargos de Originação',
+                        data: [0, 0, 0], // TAC, QQM, IOF
+                        backgroundColor: ['#dbeafe', '#e9d5ff', '#c7d2fe'], // Pastel Blue, Purple, Indigo
+                        borderColor: '#f8f9fa',
+                        borderWidth: 5, // Thicker border for highlight
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '60%',
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                           display: true,
+                           position: 'bottom',
+                           onClick: (e, legendItem, legend) => {
+                               const chart = legend.chart;
+                               const datasetIndex = legendItem.datasetIndex;
+                               const index = legendItem.index;
+                               
+                               const meta = chart.getDatasetMeta(datasetIndex);
+                               meta.data[index].hidden = !meta.data[index].hidden;
+                               
+                               chart.update();
+                           },
+                           labels: {
+                               generateLabels: (chart) => {
+                                   const allItems = [];
+                                   const datasets = chart.data.datasets;
+                                   const labels = chart.data.labels;
+
+                                   // Dataset 0 (Maintenance)
+                                   datasets[0].data.forEach((_, index) => {
+                                       const meta = chart.getDatasetMeta(0);
+                                       allItems.push({
+                                           text: labels[index],
+                                           fillStyle: datasets[0].backgroundColor[index],
+                                           strokeStyle: datasets[0].backgroundColor[index],
+                                           datasetIndex: 0,
+                                           index: index,
+                                           hidden: meta.data[index].hidden
+                                       });
+                                   });
+
+                                   // Dataset 1 (Origination)
+                                   datasets[1].data.forEach((_, index) => {
+                                       const meta = chart.getDatasetMeta(1);
+                                       allItems.push({
+                                           text: labels[index + 3],
+                                           fillStyle: datasets[1].backgroundColor[index],
+                                           strokeStyle: datasets[1].backgroundColor[index],
+                                           datasetIndex: 1,
+                                           index: index,
+                                           hidden: meta.data[index].hidden
+                                       });
+                                   });
+
+                                   return allItems;
+                               }
+                           }
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
+                                    const datasetLabel = context.dataset.label || '';
+                                    let individualLabel;
+                                    if (context.datasetIndex === 0) { // Outer ring: Maintenance
+                                        individualLabel = context.chart.data.labels[context.dataIndex];
+                                    } else { // Inner ring: Origination
+                                        individualLabel = context.chart.data.labels[context.dataIndex + 3];
                                     }
-                                    if (context.parsed !== null) {
-                                        label += formatCurrency(context.parsed);
-                                    }
-                                    return label;
+                                    const value = formatCurrency(context.parsed);
+                                    return `${datasetLabel}: ${individualLabel} (${value})`;
                                 }
                             }
                         }
@@ -366,226 +460,213 @@
             });
         }
 
-        // Função para calcular TIR (Taxa Interna de Retorno) usando método iterativo
+        // --- FINANCIAL CALCULATIONS ---
         function calculateIRR(cashFlows, guess) {
             const maxIterations = 1000;
-            const precision = 0.0000001; // 0.00001%
-
+            const precision = 1e-7;
             let irr = guess;
-
             for (let i = 0; i < maxIterations; i++) {
                 let npv = 0;
-                for (let j = 0; j < cashFlows.length; j++) {
-                    npv += cashFlows[j] / Math.pow(1 + irr, j);
-                }
-
-                if (Math.abs(npv) < precision) {
-                    return irr;
-                }
-
                 let derivative = 0;
                 for (let j = 0; j < cashFlows.length; j++) {
+                    npv += cashFlows[j] / Math.pow(1 + irr, j);
                     derivative -= j * cashFlows[j] / Math.pow(1 + irr, j + 1);
                 }
-
-                if (derivative === 0) {
-                    return irr; // Avoid division by zero
-                }
-                irr = irr - npv / derivative;
+                if (Math.abs(npv) < precision) return irr;
+                if (derivative === 0) return irr;
+                irr -= npv / derivative;
             }
-            return irr; // Return the best guess after max iterations
+            return irr;
         }
 
-        // Função para mapear o número de meses para o índice correto da matriz qqmRates
         function getQqmTermIndex(numMonths) {
-            if (numMonths >= 1 && numMonths <= 12) return 0;
-            if (numMonths >= 13 && numMonths <= 18) return 1;
-            if (numMonths >= 19 && numMonths <= 24) return 2;
-            if (numMonths >= 25 && numMonths <= 36) return 3;
-            if (numMonths >= 37 && numMonths <= 48) return 4;
-            if (numMonths >= 49 && numMonths <= 60) return 5;
-            return -1; // Retorna -1 para casos não mapeados, embora as opções de dropdown devam cobrir todos
+            if (numMonths <= 12) return 0;
+            if (numMonths <= 18) return 1;
+            if (numMonths <= 24) return 2;
+            if (numMonths <= 36) return 3;
+            if (numMonths <= 48) return 4;
+            if (numMonths <= 60) return 5;
+            return -1;
         }
 
+        // --- MAIN SIMULATION LOGIC ---
         function updateSimulation() {
-            const amount = parseFloat(loanAmountInput.value); // Valor total do empréstimo (o que o provedor "empresta")
+            // 1. GET INPUTS
+            const desiredNetAmount = parseFloat(netAmountInput.value);
             const termIndex = parseInt(loanTermSelect.value);
             const ageIndex = parseInt(ageRangeSelect.value);
             const numMonths = actualMonths[termIndex];
 
-            loanAmountLabel.textContent = formatCurrency(amount);
+            netAmountLabel.textContent = formatCurrency(desiredNetAmount);
 
-            // Cálculos dos Encargos de Originação
-            const tacValue = amount * tacRate;
-            const iofValue = amount * iofRate;
-
-            // Calcular o valor base para QQM após deduzir TAC e IOF
-            const baseAmountForQqm = amount - tacValue - iofValue;
-
-            const qqmTermArrayIndex = getQqmTermIndex(numMonths); 
-            
-            let qqmValue = 0;
+            // 2. CALCULATE GROSS AMOUNT
+            const qqmTermArrayIndex = getQqmTermIndex(numMonths);
             let currentQqmPercent = 0;
+            let grossAmount = 0;
 
             if (qqmTermArrayIndex !== -1 && qqmRates[qqmTermArrayIndex] && qqmRates[qqmTermArrayIndex][ageIndex] !== null) {
                 currentQqmPercent = qqmRates[qqmTermArrayIndex][ageIndex];
-                qqmValue = baseAmountForQqm * currentQqmPercent;
-                qqmEligibilityMessageEl.classList.add('hidden'); // Esconde a mensagem se elegível
+                qqmEligibilityMessageEl.classList.add('hidden');
             } else {
-                qqmValue = 0;
                 currentQqmPercent = 0;
-                qqmEligibilityMessageEl.classList.remove('hidden'); // Mostra a mensagem se não elegível
+                qqmEligibilityMessageEl.classList.remove('hidden');
             }
             
-            const totalFees = tacValue + qqmValue + iofValue;
-            let netAmount = amount - totalFees; // Valor que o mutuário realmente recebe
-
-            // Garante que o valor líquido não seja negativo
-            if (netAmount < 0) {
-                netAmount = 0;
+            const denominator = (1 - tacRate - iofRate) * (1 - currentQqmPercent);
+            if (denominator > 0) {
+                grossAmount = desiredNetAmount / denominator;
+            } else {
+                grossAmount = 0;
             }
-
+            
+            // 3. CALCULATE ORIGINATION FEES
+            const tacValue = grossAmount * tacRate;
+            const iofValue = grossAmount * iofRate;
+            const baseAmountForQqm = grossAmount - tacValue - iofValue;
+            const qqmValue = baseAmountForQqm * currentQqmPercent;
+            const totalOriginationFees = tacValue + qqmValue + iofValue;
+            
+            // 4. UPDATE UI - ORIGINATION AND SUMMARY RESULTS
+            grossAmountEl.textContent = formatCurrency(grossAmount);
+            summaryNetAmountEl.textContent = formatCurrency(desiredNetAmount);
             tacValueEl.textContent = formatCurrency(tacValue); 
             qqmValueEl.textContent = formatCurrency(qqmValue); 
             iofValueEl.textContent = formatCurrency(iofValue); 
-            totalFeesEl.textContent = formatCurrency(totalFees); 
-            netAmountEl.textContent = formatCurrency(netAmount); 
+            totalOriginationFeesEl.textContent = formatCurrency(totalOriginationFees); 
 
-            // Exibir percentuais
             tacPercentEl.textContent = `(${formatPercent(tacRate)})`;
             qqmPercentEl.textContent = `(${formatPercent(currentQqmPercent)})`;
             iofPercentEl.textContent = `(${formatPercent(iofRate)})`;
 
-
-            updateChartData(tacValue, qqmValue, iofValue);
-
-            // Cálculos da Tabela de Amortização (Sistema SAC)
-            amortizationTableBody.innerHTML = ''; // Limpa a tabela antes de preencher
+            // 5. CALCULATE AMORTIZATION TABLE AND MAINTENANCE FEES
+            amortizationTableBody.innerHTML = ''; 
             
-            // O saldo devedor para cálculo de juros e amortização inicia com o VALOR DO EMPRÉSTIMO (amount)
-            let currentSaldoDevedor = amount; 
-            // A amortização constante é baseada no VALOR DO EMPRÉSTIMO
-            const constantAmortization = amount <= 0 || numMonths === 0 ? 0 : amount / numMonths; 
-
-            // Fluxos de caixa para TIR (do ponto de vista do PROVEDOR)
-            // O primeiro fluxo é a saída do valor total do empréstimo (negativo)
-            const cashFlows = [-amount]; 
+            let currentSaldoDevedor = grossAmount;
+            const constantAmortization = grossAmount <= 0 || numMonths === 0 ? 0 : grossAmount / numMonths; 
+            const borrowerCashFlows = [desiredNetAmount]; 
+            const lenderCashFlows = [-grossAmount];
+            
+            let totalJuros = 0;
+            let totalCorrecao = 0;
+            let totalAdmin = 0;
 
             for (let i = 1; i <= numMonths; i++) {
-                // Se o saldo devedor já for zero, as próximas parcelas também serão zero
-                if (currentSaldoDevedor <= 0 && i > 1) { 
+                if (currentSaldoDevedor <= 0.01 && i > 1) { 
                     const row = amortizationTableBody.insertRow();
-                    row.insertCell().textContent = i;
-                    row.insertCell().textContent = formatCurrency(0); // Valor da Parcela
-                    row.insertCell().textContent = formatCurrency(0); // Juros
-                    row.insertCell().textContent = formatCurrency(0); // Correção Monetária
-                    row.insertCell().textContent = formatCurrency(0); // Taxa Administrativa
-                    row.insertCell().textContent = formatCurrency(0); // Custo Total
-                    row.insertCell().textContent = formatCurrency(0); // Valor Amortizado
-                    row.insertCell().textContent = formatCurrency(0); // Saldo Devedor
-                    cashFlows.push(0); // Adiciona 0 ao fluxo de caixa
+                    for(let j=0; j<8; j++) { row.insertCell().textContent = j === 0 ? i : formatCurrency(0); }
+                    borrowerCashFlows.push(0);
+                    lenderCashFlows.push(0);
                     continue; 
                 }
 
-                // 1. Calcular Correção Monetária sobre o saldo devedor inicial do mês
                 let correcaoMes = currentSaldoDevedor * monthlyINPCRate;
-
-                // 2. Saldo devedor atualizado pela correção monetária para cálculo de Juros e Taxa Administrativa
-                let saldoDevedorCorrigidoParaEncargos = currentSaldoDevedor + correcaoMes; 
-
-                // 3. Calcular Juros sobre o saldo devedor corrigido
-                let jurosMes = saldoDevedorCorrigidoParaEncargos * monthlyInterestRate;
-
-                // 4. Calcular Taxa Administrativa sobre o saldo devedor corrigido
-                let adminMes = saldoDevedorCorrigidoParaEncargos * monthlyAdminRate; 
-
-                // 5. Custo Total do mês (Juros + Correção Monetária + Taxa Administrativa)
+                let saldoDevedorCorrigido = currentSaldoDevedor + correcaoMes; 
+                let jurosMes = saldoDevedorCorrigido * monthlyInterestRate;
+                let adminMes = saldoDevedorCorrigido * monthlyAdminRate; 
                 let custoTotalMes = jurosMes + correcaoMes + adminMes;
-                
                 let valorAmortizado = constantAmortization;
-                let valorParcela = valorAmortizado + custoTotalMes;
-
-                // Ajuste para a última parcela para garantir que o saldo devedor seja zero
+                
                 if (i === numMonths) {
-                    valorAmortizado = currentSaldoDevedor; // Amortiza o restante do principal
-                    // Recalcula os custos para a última parcela com o saldo final
-                    let saldoFinalCorrigido = currentSaldoDevedor + (currentSaldoDevedor * monthlyINPCRate);
-                    jurosMes = saldoFinalCorrigido * monthlyInterestRate; 
+                    valorAmortizado = currentSaldoDevedor;
                     correcaoMes = currentSaldoDevedor * monthlyINPCRate;
-                    adminMes = saldoFinalCorrigido * monthlyAdminRate; 
+                    saldoDevedorCorrigido = currentSaldoDevedor + correcaoMes;
+                    jurosMes = saldoDevedorCorrigido * monthlyInterestRate;
+                    adminMes = saldoDevedorCorrigido * monthlyAdminRate;
                     custoTotalMes = jurosMes + correcaoMes + adminMes;
-                    valorParcela = valorAmortizado + custoTotalMes; // Ajusta a parcela final
                 }
-
+                
+                let valorParcela = valorAmortizado + custoTotalMes;
                 currentSaldoDevedor -= valorAmortizado;
-                // Garante que o saldo não seja negativo devido a imprecisões de ponto flutuante
-                if (currentSaldoDevedor < 0.01 && i === numMonths) { 
-                    currentSaldoDevedor = 0;
-                }
+                if (currentSaldoDevedor < 0.01) { currentSaldoDevedor = 0; }
+                
+                totalJuros += jurosMes;
+                totalCorrecao += correcaoMes;
+                totalAdmin += adminMes;
 
                 const row = amortizationTableBody.insertRow();
-                row.insertCell().textContent = i; // Parcela
-                row.insertCell().textContent = formatCurrency(valorParcela); // Valor da Parcela
-                row.insertCell().textContent = formatCurrency(jurosMes); // Juros
-                row.insertCell().textContent = formatCurrency(correcaoMes); // Correção Monetária
-                row.insertCell().textContent = formatCurrency(adminMes); // Taxa Administrativa
-                row.insertCell().textContent = formatCurrency(custoTotalMes); // Custo Total
-                row.insertCell().textContent = formatCurrency(valorAmortizado); // Valor Amortizado
-                row.insertCell().textContent = formatCurrency(currentSaldoDevedor); // Saldo Devedor
+                row.insertCell().textContent = i;
+                row.insertCell().textContent = formatCurrency(valorParcela);
+                row.insertCell().textContent = formatCurrency(jurosMes);
+                row.insertCell().textContent = formatCurrency(correcaoMes);
+                row.insertCell().textContent = formatCurrency(adminMes);
+                row.insertCell().textContent = formatCurrency(custoTotalMes);
+                row.insertCell().textContent = formatCurrency(valorAmortizado);
+                row.insertCell().textContent = formatCurrency(currentSaldoDevedor);
 
-                cashFlows.push(valorParcela); // Adiciona a parcela como fluxo de caixa de ENTRADA para o provedor
+                borrowerCashFlows.push(-valorParcela);
+                lenderCashFlows.push(valorParcela - adminMes); // CORRECTED: Lender's inflow excludes the admin fee
             }
 
-            // Calcular e exibir CET/TIR
-            // CET e TIR agora refletem a perspectiva do PROVEDOR
-            if (numMonths > 0 && amount > 0) { // Baseado no 'amount' para elegibilidade do cálculo
-                const monthlyIRR = calculateIRR(cashFlows, 0.005); // Chute inicial de 0.5% a.m.
-                const annualIRR = Math.pow(1 + monthlyIRR, 12) - 1;
+            // 6. UPDATE UI - MAINTENANCE AND TOTALS
+            const totalManutencao = totalJuros + totalCorrecao + totalAdmin;
+            const totalAllFees = totalOriginationFees + totalManutencao;
+            totalInterestValueEl.textContent = formatCurrency(totalJuros);
+            totalInflationValueEl.textContent = formatCurrency(totalCorrecao);
+            totalAdminFeeValueEl.textContent = formatCurrency(totalAdmin);
+            totalMaintenanceFeesEl.textContent = formatCurrency(totalManutencao);
+            totalAllFeesValueEl.textContent = formatCurrency(totalAllFees);
+            
+            // 7. UPDATE CHART
+            updateChartData({
+                tac: tacValue,
+                qqm: qqmValue,
+                iof: iofValue,
+                interest: totalJuros,
+                inflation: totalCorrecao,
+                admin: totalAdmin
+            });
 
-                cetMonthlyEl.textContent = formatPercent(monthlyIRR);
-                cetAnnualEl.textContent = formatPercent(annualIRR);
-                tirMonthlyEl.textContent = formatPercent(monthlyIRR);
-                tirAnnualEl.textContent = formatPercent(annualIRR);
+            // 8. CALCULATE AND DISPLAY FINANCIAL INDICATORS
+            if (numMonths > 0 && grossAmount > 0) {
+                // Borrower's CET
+                const monthlyCET = calculateIRR(borrowerCashFlows, 0.005);
+                const annualCET = Math.pow(1 + monthlyCET, 12) - 1;
+                cetMonthlyEl.textContent = formatPercent(monthlyCET);
+                cetAnnualEl.textContent = formatPercent(annualCET);
+                
+                // Lender's TIR
+                const monthlyLenderTIR = calculateIRR(lenderCashFlows, 0.005);
+                const annualLenderTIR = Math.pow(1 + monthlyLenderTIR, 12) - 1;
+                lenderTirMonthlyEl.textContent = formatPercent(monthlyLenderTIR);
+                lenderTirAnnualEl.textContent = formatPercent(annualLenderTIR);
+
             } else {
                 cetMonthlyEl.textContent = formatPercent(0);
                 cetAnnualEl.textContent = formatPercent(0);
-                tirMonthlyEl.textContent = formatPercent(0);
-                tirAnnualEl.textContent = formatPercent(0);
+                lenderTirMonthlyEl.textContent = formatPercent(0);
+                lenderTirAnnualEl.textContent = formatPercent(0);
             }
         }
 
-        function updateChartData(tac, qqm, iof) {
-            feesChart.data.datasets[0].data = [tac, qqm, iof];
-            feesChart.update();
+        // --- UI HELPERS ---
+        function updateChartData(costs) {
+            // Outer ring - Maintenance
+            costsChart.data.datasets[0].data = [costs.interest, costs.inflation, costs.admin];
+            // Inner ring - Origination
+            costsChart.data.datasets[1].data = [costs.tac, costs.qqm, costs.iof];
+            
+            costsChart.update();
         }
         
         function handleTabClick(event) {
             const clickedTab = event.currentTarget;
             const tabName = clickedTab.dataset.tab;
-
-            tabButtons.forEach(button => {
-                button.classList.remove('active');
-            });
+            tabButtons.forEach(button => button.classList.remove('active'));
             clickedTab.classList.add('active');
-
             tabPanes.forEach(pane => {
-                if (pane.id === `${tabName}-content`) {
-                    pane.classList.remove('hidden');
-                } else {
-                    pane.classList.add('hidden');
-                }
+                pane.classList.toggle('hidden', pane.id !== `${tabName}-content`);
             });
         }
 
-        loanAmountInput.addEventListener('input', updateSimulation);
+        // --- EVENT LISTENERS ---
+        netAmountInput.addEventListener('input', updateSimulation);
         loanTermSelect.addEventListener('change', updateSimulation);
         ageRangeSelect.addEventListener('change', updateSimulation);
-        
         tabButtons.forEach(button => button.addEventListener('click', handleTabClick));
-
         document.addEventListener('DOMContentLoaded', () => {
             initializeChart();
             updateSimulation();
+            tabButtons[0].click(); // Activate the first tab on load
         });
 
     </script>
