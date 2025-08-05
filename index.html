@@ -235,17 +235,16 @@
 
             <section id="details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mt-8">
                 <h3 class="text-xl font-bold text-center mb-6">Tabela de Amortização Mensal Estimada (Sistema SAC)</h3>
-                <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, custo total, valor amortizado e saldo devedor. </p>
+                <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, valor amortizado e saldo devedor. </p>
                 <div class="table-container rounded-lg shadow-md mb-10">
                     <table class="min-w-full bg-white">
                         <thead>
                             <tr>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Parcela</th>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Valor da Parcela</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Juros</th>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Correção Monetária</th>
+                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Juros</th>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Taxa Administrativa</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Custo Total</th>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Valor Amortizado</th>
                                 <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Saldo Devedor</th>
                             </tr>
@@ -553,7 +552,9 @@
             for (let i = 1; i <= numMonths; i++) {
                 if (currentSaldoDevedor <= 0.01 && i > 1) { 
                     const row = amortizationTableBody.insertRow();
-                    for(let j=0; j<8; j++) { row.insertCell().textContent = j === 0 ? i : formatCurrency(0); }
+                    for(let j=0; j<7; j++) { // Adjusted for 7 columns
+                        row.insertCell().textContent = j === 0 ? i : formatCurrency(0); 
+                    }
                     borrowerCashFlows.push(0);
                     lenderCashFlows.push(0);
                     continue; 
@@ -586,15 +587,14 @@
                 const row = amortizationTableBody.insertRow();
                 row.insertCell().textContent = i;
                 row.insertCell().textContent = formatCurrency(valorParcela);
-                row.insertCell().textContent = formatCurrency(jurosMes);
                 row.insertCell().textContent = formatCurrency(correcaoMes);
+                row.insertCell().textContent = formatCurrency(jurosMes);
                 row.insertCell().textContent = formatCurrency(adminMes);
-                row.insertCell().textContent = formatCurrency(custoTotalMes);
                 row.insertCell().textContent = formatCurrency(valorAmortizado);
                 row.insertCell().textContent = formatCurrency(currentSaldoDevedor);
 
                 borrowerCashFlows.push(-valorParcela);
-                lenderCashFlows.push(valorParcela - adminMes); // CORRECTED: Lender's inflow excludes the admin fee
+                lenderCashFlows.push(valorParcela - adminMes);
             }
 
             // 6. UPDATE UI - MAINTENANCE AND TOTALS
