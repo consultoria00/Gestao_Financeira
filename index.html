@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Custos de Empréstimo - PORTUS</title>
+    <title>Simulador de Custos de Empréstimo - PORTUS (Corrigido)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,7 +99,7 @@
                             <select id="loanTerm" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                                 <option value="0">1 mês</option>
                                 <option value="1">6 meses</option>
-                                <option value="2">12 meses</option>
+                                <option value="2" selected>12 meses</option>
                                 <option value="3">18 meses</option>
                                 <option value="4">24 meses</option>
                                 <option value="5">30 meses</option>
@@ -232,7 +232,8 @@
                     </div>
                 </div>
             </section>
-
+            
+            <!-- O restante do HTML permanece inalterado -->
             <section id="details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mt-8">
                 <h3 class="text-xl font-bold text-center mb-6">Tabela de Amortização Mensal Estimada (Sistema SAC)</h3>
                 <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, valor amortizado e saldo devedor. </p>
@@ -286,10 +287,10 @@
                         <p class="mb-4">Representa o principal componente de remuneração do capital emprestado. A taxa nominal é de 5,21% ao ano, aplicada mensalmente sobre o saldo devedor. A definição desta taxa considera a Meta Atuarial dos planos de benefícios (INPC + 4,71%), acrescida de 0,48% para cobrir eventuais inadimplências e flutuações de mercado, configurando um custo fixo para o mutuário durante a amortização.</p>
 
                         <h3 class="font-bold text-lg mb-2">Atualização Monetária</h3>
-                        <p class="mb-4">Tem como objetivo preservar o poder de compra do capital emprestado, corrigindo o saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao Consumidor (INPC) as indexador, com uma defasagem de dois meses. A adoção do INPC visa assegurar consistência com a meta atuarial dos planos de benefícios.</p>
+                        <p class="mb-4">Tem como objetivo preservar o poder de compra do capital emprestado, corrigindo o saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao Consumidor (INPC) como indexador, com uma defasagem de dois meses. Para fins de simulação, é utilizada a meta de inflação de 5% ao ano. A adoção do INPC visa assegurar consistência com a meta atuarial dos planos de benefícios.</p>
 
                         <h3 class="font-bold text-lg mb-2">Taxa de Administração</h3>
-                        <p>Encargo mensal para cobrir os custos operacionais e de gestão do contrato. A taxa é de 0,41% ao mês (equivalente a 5% ao ano) e incide sobre o saldo devedor. Sua correta calibração é fundamental para a sustentabilidade da operação de empréstimos.</p>
+                        <p>Encargo mensal para cobrir os custos operacionais e de gestão do contrato. A taxa é de 5% ao ano e incide sobre o saldo devedor. Sua correta calibração é fundamental para a sustentabilidade da operação de empréstimos.</p>
                     </div>
                     <div id="final-content" class="tab-pane hidden">
                         <p>É de suma importância que os mutuários da PORTUS compreendam integralmente a estrutura da taxa de juros e os encargos incidentes. A transparência na apresentação dessas informações é crucial para que o mutuário possa tomar decisões financeiras conscientes. As taxas e encargos aqui apresentados podem sofrer alterações, em conformidade com o Contrato de Abertura de Crédito e o Regulamento de Empréstimos. Eventuais modificações nas condições serão realizadas a critério da Diretoria Executiva da PORTUS ou em função de alterações na legislação aplicável. Recomenda-se que os mutuários consultem sempre os documentos oficiais da PORTUS e, em caso de dúvidas, busquem esclarecimentos junto aos canais de atendimento da instituição.</p>
@@ -359,9 +360,15 @@
         const actualMonths = [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]; 
         const tacRate = 0.005; // 0.5%
         const iofRate = 0.0038; // 0.38%
-        const monthlyInterestRate = 0.0042; // 0.42% a.m. - Taxa de Juros Real
-        const monthlyAdminRate = 0.0041; // 0.41% a.m. - Taxa de Administração
-        const monthlyINPCRate = 0.0041; // 0.41% a.m. - INPC fixo conforme solicitação
+        
+        // --- AJUSTE DAS TAXAS MENSAIS ---
+        // Calcula a taxa mensal exata para corresponder a 5.21% a.a.
+        const monthlyInterestRate = Math.pow(1.0521, 1/12) - 1; 
+        // Calcula a taxa mensal exata para corresponder a 5% a.a.
+        const monthlyRateFrom5PercentAnnual = Math.pow(1.05, 1/12) - 1;
+        const monthlyAdminRate = monthlyRateFrom5PercentAnnual;
+        const monthlyINPCRate = monthlyRateFrom5PercentAnnual;
+        // --- FIM DO AJUSTE ---
 
         let costsChart;
 
@@ -374,16 +381,16 @@
                     labels: ['Juros', 'Correção Monetária', 'Taxa Admin.', 'TAC', 'QQM', 'IOF'],
                     datasets: [{
                         label: 'Encargos de Manutenção',
-                        data: [0, 0, 0], // Juros, Correção, Admin
-                        backgroundColor: ['#a7f3d0', '#fde68a', '#a5f3fc'], // Pastel Green, Amber, Cyan
+                        data: [0, 0, 0],
+                        backgroundColor: ['#a7f3d0', '#fde68a', '#a5f3fc'],
                         borderColor: '#f8f9fa',
                         borderWidth: 2,
                     }, {
                         label: 'Encargos de Originação',
-                        data: [0, 0, 0], // TAC, QQM, IOF
-                        backgroundColor: ['#dbeafe', '#e9d5ff', '#c7d2fe'], // Pastel Blue, Purple, Indigo
+                        data: [0, 0, 0],
+                        backgroundColor: ['#dbeafe', '#e9d5ff', '#c7d2fe'],
                         borderColor: '#f8f9fa',
-                        borderWidth: 5, // Thicker border for highlight
+                        borderWidth: 5,
                     }]
                 },
                 options: {
@@ -393,48 +400,23 @@
                         legend: {
                            display: true,
                            position: 'bottom',
-                           onClick: (e, legendItem, legend) => {
-                               const chart = legend.chart;
-                               const datasetIndex = legendItem.datasetIndex;
-                               const index = legendItem.index;
-                               
-                               const meta = chart.getDatasetMeta(datasetIndex);
-                               meta.data[index].hidden = !meta.data[index].hidden;
-                               
-                               chart.update();
-                           },
                            labels: {
                                generateLabels: (chart) => {
                                    const allItems = [];
-                                   const datasets = chart.data.datasets;
-                                   const labels = chart.data.labels;
-
-                                   // Dataset 0 (Maintenance)
-                                   datasets[0].data.forEach((_, index) => {
-                                       const meta = chart.getDatasetMeta(0);
-                                       allItems.push({
-                                           text: labels[index],
-                                           fillStyle: datasets[0].backgroundColor[index],
-                                           strokeStyle: datasets[0].backgroundColor[index],
-                                           datasetIndex: 0,
-                                           index: index,
-                                           hidden: meta.data[index].hidden
+                                   chart.data.datasets.forEach((dataset, i) => {
+                                       const meta = chart.getDatasetMeta(i);
+                                       const offset = i === 0 ? 0 : 3;
+                                       dataset.data.forEach((_, index) => {
+                                           allItems.push({
+                                               text: chart.data.labels[index + offset],
+                                               fillStyle: dataset.backgroundColor[index],
+                                               strokeStyle: dataset.backgroundColor[index],
+                                               datasetIndex: i,
+                                               index: index,
+                                               hidden: meta.data[index].hidden
+                                           });
                                        });
                                    });
-
-                                   // Dataset 1 (Origination)
-                                   datasets[1].data.forEach((_, index) => {
-                                       const meta = chart.getDatasetMeta(1);
-                                       allItems.push({
-                                           text: labels[index + 3],
-                                           fillStyle: datasets[1].backgroundColor[index],
-                                           strokeStyle: datasets[1].backgroundColor[index],
-                                           datasetIndex: 1,
-                                           index: index,
-                                           hidden: meta.data[index].hidden
-                                       });
-                                   });
-
                                    return allItems;
                                }
                            }
@@ -443,12 +425,8 @@
                             callbacks: {
                                 label: function(context) {
                                     const datasetLabel = context.dataset.label || '';
-                                    let individualLabel;
-                                    if (context.datasetIndex === 0) { // Outer ring: Maintenance
-                                        individualLabel = context.chart.data.labels[context.dataIndex];
-                                    } else { // Inner ring: Origination
-                                        individualLabel = context.chart.data.labels[context.dataIndex + 3];
-                                    }
+                                    const offset = context.datasetIndex === 0 ? 0 : 3;
+                                    const individualLabel = context.chart.data.labels[context.dataIndex + offset];
                                     const value = formatCurrency(context.parsed);
                                     return `${datasetLabel}: ${individualLabel} (${value})`;
                                 }
@@ -552,7 +530,7 @@
             for (let i = 1; i <= numMonths; i++) {
                 if (currentSaldoDevedor <= 0.01 && i > 1) { 
                     const row = amortizationTableBody.insertRow();
-                    for(let j=0; j<7; j++) { // Adjusted for 7 columns
+                    for(let j=0; j<7; j++) {
                         row.insertCell().textContent = j === 0 ? i : formatCurrency(0); 
                     }
                     borrowerCashFlows.push(0);
@@ -567,7 +545,7 @@
                 let custoTotalMes = jurosMes + correcaoMes + adminMes;
                 let valorAmortizado = constantAmortization;
                 
-                if (i === numMonths) {
+                if (i === numMonths && currentSaldoDevedor > 0) {
                     valorAmortizado = currentSaldoDevedor;
                     correcaoMes = currentSaldoDevedor * monthlyINPCRate;
                     saldoDevedorCorrigido = currentSaldoDevedor + correcaoMes;
@@ -665,6 +643,7 @@
         tabButtons.forEach(button => button.addEventListener('click', handleTabClick));
         document.addEventListener('DOMContentLoaded', () => {
             initializeChart();
+            loanTermSelect.value = "2"; // Define 12 meses como padrão ao carregar
             updateSimulation();
             tabButtons[0].click(); // Activate the first tab on load
         });
@@ -672,4 +651,3 @@
     </script>
 </body>
 </html>
-
