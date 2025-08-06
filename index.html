@@ -422,15 +422,28 @@
                            }
                         },
                         tooltip: {
+                            // --- AJUSTE DO TOOLTIP ---
                             callbacks: {
+                                title: function(tooltipItems) {
+                                    // Retorna o rótulo do conjunto de dados (dataset) como o título do tooltip.
+                                    if (tooltipItems.length > 0) {
+                                        return tooltipItems[0].dataset.label;
+                                    }
+                                    return '';
+                                },
                                 label: function(context) {
-                                    const datasetLabel = context.dataset.label || '';
+                                    // Pega o rótulo específico do item, ajustando para os dois anéis.
                                     const offset = context.datasetIndex === 0 ? 0 : 3;
                                     const individualLabel = context.chart.data.labels[context.dataIndex + offset];
+                                    
+                                    // Formata o valor como moeda.
                                     const value = formatCurrency(context.parsed);
-                                    return `${datasetLabel}: ${individualLabel} (${value})`;
+
+                                    // Retorna o rótulo e o valor para o corpo do tooltip.
+                                    return `${individualLabel} (${value})`;
                                 }
                             }
+                            // --- FIM DO AJUSTE DO TOOLTIP ---
                         }
                     }
                 }
