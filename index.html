@@ -336,7 +336,7 @@
             <h2 class="text-center text-2xl font-bold text-gray-800">CÉDULA DE CRÉDITO BANCÁRIO</h2>
             <p class="text-center text-gray-600 mb-8">Número do Contrato: <span id="ccbContractNumber" class="font-mono"></span></p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-8 mb-8">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-700">EMITENTE (CREDOR)</h3>
                     <p>Nome: <span class="data-field">PORTUS - Instituto de Seguridade Social</span></p>
@@ -345,12 +345,15 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold text-gray-700">TOMADOR (DEVEDOR)</h3>
-                    <p>Nome: <span class="data-field">[Nome Completo do Mutuário]</span></p>
-                    <p>CPF: <span class="data-field">[000.000.000-00]</span></p>
-                    <p>Idade: <span id="ccbAge" class="data-field"></span></p>
-                    <p>Endereço: <span class="data-field">[Endereço Completo do Mutuário]</span></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                        <p>Nome: <span class="data-field">[Nome Completo do Mutuário]</span></p>
+                        <p>CPF: <span class="data-field">[000.000.000-00]</span></p>
+                        <p>Idade: <span id="ccbAge" class="data-field"></span></p>
+                        <p>Plano de Benefício: <span class="data-field">PBP1</span></p>
+                        <p>Declaração de Saúde Apresentada: <span class="data-field">[Sim/Não]</span></p>
+                    </div>
+                    <p class="mt-2">Endereço: <span class="data-field">[Endereço Completo do Mutuário]</span></p>
                     <p>Dados para Depósito: <span class="data-field">[Banco, Agência, Conta Corrente]</span></p>
-                    <p>Declaração de Saúde Apresentada: <span class="data-field">[Sim/Não]</span></p>
                 </div>
             </div>
 
@@ -832,8 +835,8 @@
             document.getElementById('cetDetailQqm').textContent = formatCurrency(raw.qqmValue);
             document.getElementById('cetDetailQqmPercent').textContent = percentOfFinanced(raw.qqmValue);
             document.getElementById('cetDetailTotalPayable').textContent = simulationData.totalPayable;
-            document.getElementById('cetDetailCetMonthly').textContent = `CET Mensal: ${simulationData.cetMonthly}`;
-            document.getElementById('cetDetailCetAnnual').textContent = `CET Anual: ${simulationData.cetAnnual}`;
+            document.getElementById('cetDetailCetMonthly').textContent = `${simulationData.cetMonthly} a.m.`;
+            document.getElementById('cetDetailCetAnnual').textContent = `${simulationData.cetAnnual} a.a.`;
 
             mainContent.classList.add('hidden');
             ccbSection.classList.remove('hidden');
