@@ -70,6 +70,32 @@
         tbody tr:nth-child(even) {
             background-color: #f8fafc;
         }
+        /* Estilos para a CCB */
+        #ccb-section {
+            border: 1px solid #d1d5db;
+        }
+        #ccb-section h2, #ccb-section h3 {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        #ccb-section p {
+            margin-bottom: 4px;
+        }
+        #ccb-section .data-field {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .signature-line {
+            border-top: 1px solid #374151;
+            margin-top: 40px;
+            padding-top: 8px;
+            text-align: center;
+        }
+        .cet-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -81,7 +107,7 @@
             <p class="mt-2 text-lg text-gray-600">Uma análise interativa dos encargos de empréstimo.</p>
         </header>
 
-        <main>
+        <main id="main-content">
             <section id="simulator" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-8">
                 <h2 class="text-2xl font-bold mb-6 text-center">Simulador Interativo de Custos</h2>
                 <p class="text-center text-gray-600 mb-8">Ajuste os valores abaixo para entender como os diferentes fatores impactam os custos do seu empréstimo.</p>
@@ -233,7 +259,6 @@
                 </div>
             </section>
             
-            <!-- O restante do HTML permanece inalterado -->
             <section id="details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mt-8">
                 <h3 class="text-xl font-bold text-center mb-6">Tabela de Amortização Mensal Estimada (Sistema SAC)</h3>
                 <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, valor amortizado e saldo devedor. </p>
@@ -255,7 +280,14 @@
                     </table>
                 </div>
 
-                <h2 class="text-2xl font-bold mb-6 text-center">Detalhamento dos Encargos</h2>
+                <!-- Botão para Contratar -->
+                <div class="text-center mt-8">
+                    <button id="contractButton" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+                        Contratar Empréstimo
+                    </button>
+                </div>
+
+                <h2 class="text-2xl font-bold mt-12 mb-6 text-center">Detalhamento dos Encargos</h2>
                 <p class="text-center text-gray-600 mb-8">Abaixo, você encontra uma explicação detalhada de cada componente do custo do seu empréstimo.</p>
                 <div class="border-b border-gray-200 mb-6">
                     <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
@@ -299,6 +331,161 @@
             </section>
         </main>
 
+        <!-- Seção da Cédula de Crédito Bancário (CCB) - Inicialmente oculta -->
+        <section id="ccb-section" class="hidden bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+            <h2 class="text-center text-2xl font-bold text-gray-800">CÉDULA DE CRÉDITO BANCÁRIO</h2>
+            <p class="text-center text-gray-600 mb-8">Número do Contrato: <span id="ccbContractNumber" class="font-mono"></span></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700">EMITENTE (CREDOR)</h3>
+                    <p>Nome: <span class="data-field">PORTUS - Instituto de Seguridade Social</span></p>
+                    <p>CNPJ: <span class="data-field">[00.000.000/0001-00]</span></p>
+                    <p>Endereço: <span class="data-field">[Endereço Completo da PORTUS]</span></p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700">TOMADOR (DEVEDOR)</h3>
+                    <p>Nome: <span class="data-field">[Nome Completo do Mutuário]</span></p>
+                    <p>CPF: <span class="data-field">[000.000.000-00]</span></p>
+                    <p>Idade: <span id="ccbAge" class="data-field"></span></p>
+                    <p>Endereço: <span class="data-field">[Endereço Completo do Mutuário]</span></p>
+                    <p>Dados para Depósito: <span class="data-field">[Banco, Agência, Conta Corrente]</span></p>
+                    <p>Declaração de Saúde Apresentada: <span class="data-field">[Sim/Não]</span></p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-700">CONDIÇÕES DO CRÉDITO</h3>
+            <div class="space-y-2 bg-gray-50 p-6 rounded-lg mb-8">
+                <p>Valor do Crédito (Bruto): <span id="ccbGrossAmount" class="font-bold text-lg data-field"></span></p>
+                <p>Valor Líquido Liberado em Conta: <span id="ccbNetAmount" class="font-bold text-lg text-green-600 data-field"></span></p>
+                <p>Prazo de Pagamento: <span id="ccbLoanTerm" class="data-field"></span></p>
+                <p>Valor da 1ª Parcela: <span id="ccbFirstInstallment" class="font-bold text-lg data-field"></span></p>
+            </div>
+            
+            <h3 class="text-lg font-semibold text-gray-700">TAXAS E ENCARGOS APLICADOS</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Taxa de Juros Real</p>
+                    <p id="ccbInterestRate" class="text-lg font-bold data-field"></p>
+                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Correção Monetária</p>
+                    <p id="ccbInflationRate" class="text-lg font-bold data-field">INPC mensal com 2 meses de defasagem</p>
+                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Taxa de Administração</p>
+                    <p id="ccbAdminRate" class="text-lg font-bold data-field"></p>
+                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Taxa de Aprovação (TAC)</p>
+                    <p id="ccbTacRate" class="text-lg font-bold data-field"></p>
+                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Imposto (IOF)</p>
+                    <p id="ccbIofRate" class="text-lg font-bold data-field"></p>
+                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Taxa de Risco (QQM)</p>
+                    <p id="ccbQqmRate" class="text-lg font-bold data-field"></p>
+                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-700">DEMONSTRATIVO DO CUSTO EFETIVO TOTAL (CET)</h3>
+            <div class="table-container rounded-lg shadow-md mb-10">
+                <table class="min-w-full bg-white cet-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Componente</th>
+                            <th>Valor (R$)</th>
+                            <th>Percentual sobre o Valor Financiado (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Valor do Crédito (Líquido Liberado)</td>
+                            <td id="cetDetailNetAmount"></td>
+                            <td>-</td>
+                        </tr>
+                        <tr class="bg-gray-100">
+                            <td colspan="3" class="font-bold text-left">Encargos Inclusos no CET:</td>
+                        </tr>
+                        <tr>
+                            <td>(+) Juros (Projetado)</td>
+                            <td id="cetDetailInterest"></td>
+                            <td id="cetDetailInterestPercent"></td>
+                        </tr>
+                        <tr>
+                            <td>(+) Correção Monetária (Projetado)</td>
+                            <td id="cetDetailInflation"></td>
+                            <td id="cetDetailInflationPercent"></td>
+                        </tr>
+                        <tr>
+                            <td>(+) Taxa de Administração (Projetado)</td>
+                            <td id="cetDetailAdmin"></td>
+                            <td id="cetDetailAdminPercent"></td>
+                        </tr>
+                        <tr>
+                            <td>(+) Taxa de Aprovação de Crédito (TAC)</td>
+                            <td id="cetDetailTac"></td>
+                            <td id="cetDetailTacPercent"></td>
+                        </tr>
+                        <tr>
+                            <td>(+) Imposto sobre Operações Financeiras (IOF)</td>
+                            <td id="cetDetailIof"></td>
+                            <td id="cetDetailIofPercent"></td>
+                        </tr>
+                        <tr>
+                            <td>(+) Taxa de Risco (QQM)</td>
+                            <td id="cetDetailQqm"></td>
+                            <td id="cetDetailQqmPercent"></td>
+                        </tr>
+                        <tr class="bg-gray-200 font-bold">
+                            <td>(=) Valor Total a Pagar</td>
+                            <td id="cetDetailTotalPayable"></td>
+                            <td>-</td>
+                        </tr>
+                        <tr class="bg-blue-100 font-bold text-blue-800">
+                            <td>Custo Efetivo Total (CET)</td>
+                            <td id="cetDetailCetMonthly"></td>
+                            <td id="cetDetailCetAnnual"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-sm text-gray-600 space-y-4">
+                <p>O TOMADOR declara ter recebido, lido e compreendido todos os termos e condições desta Cédula de Crédito Bancário, concordando com todas as suas cláusulas e obrigações, incluindo o Custo Efetivo Total (CET) e demais encargos aqui especificados.</p>
+                <p>Esta Cédula de Crédito Bancário é emitida em caráter irrevogável e irretratável, constituindo título executivo extrajudicial nos termos da legislação aplicável.</p>
+            </div>
+
+            <div class="mt-12 grid grid-cols-2 gap-8 text-center">
+                <div>
+                    <div class="signature-line">
+                        <p>PORTUS - Instituto de Seguridade Social (Emitente)</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="signature-line">
+                        <p>[Nome Completo do Mutuário] (Tomador)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-center mt-8 text-sm text-gray-500">Rio de Janeiro, <span id="ccbDate"></span></p>
+
+            <div class="text-center mt-12">
+                <button id="backToSimulatorButton" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors duration-300 shadow-md">
+                    Voltar ao Simulador
+                </button>
+            </div>
+        </section>
+
         <footer class="text-center mt-12 py-4 border-t">
             <p class="text-sm text-gray-500">&copy; 2025 PORTUS. Todos os direitos reservados.</p>
         </footer>
@@ -339,13 +526,20 @@
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabPanes = document.querySelectorAll('.tab-pane');
 
+        const mainContent = document.getElementById('main-content');
+        const ccbSection = document.getElementById('ccb-section');
+        const contractButton = document.getElementById('contractButton');
+        const backToSimulatorButton = document.getElementById('backToSimulatorButton');
+
+        let simulationData = {};
+
         // --- FORMATTERS ---
         const formatCurrency = (value) => {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         };
 
-        const formatPercent = (value) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+        const formatPercent = (value, digits = 2) => {
+            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
         };
 
         // --- CONSTANTS AND RATES ---
@@ -358,17 +552,13 @@
             [0.005797, null, null, null, null, null]
         ];
         const actualMonths = [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]; 
-        const tacRate = 0.005; // 0.5%
-        const iofRate = 0.0038; // 0.38%
+        const tacRate = 0.005;
+        const iofRate = 0.0038;
         
-        // --- AJUSTE DAS TAXAS MENSAIS ---
-        // Calcula a taxa mensal exata para corresponder a 5.21% a.a.
         const monthlyInterestRate = Math.pow(1.0521, 1/12) - 1; 
-        // Calcula a taxa mensal exata para corresponder a 5% a.a.
         const monthlyRateFrom5PercentAnnual = Math.pow(1.05, 1/12) - 1;
         const monthlyAdminRate = monthlyRateFrom5PercentAnnual;
         const monthlyINPCRate = monthlyRateFrom5PercentAnnual;
-        // --- FIM DO AJUSTE ---
 
         let costsChart;
 
@@ -422,28 +612,20 @@
                            }
                         },
                         tooltip: {
-                            // --- AJUSTE DO TOOLTIP ---
                             callbacks: {
                                 title: function(tooltipItems) {
-                                    // Retorna o rótulo do conjunto de dados (dataset) como o título do tooltip.
                                     if (tooltipItems.length > 0) {
                                         return tooltipItems[0].dataset.label;
                                     }
                                     return '';
                                 },
                                 label: function(context) {
-                                    // Pega o rótulo específico do item, ajustando para os dois anéis.
                                     const offset = context.datasetIndex === 0 ? 0 : 3;
                                     const individualLabel = context.chart.data.labels[context.dataIndex + offset];
-                                    
-                                    // Formata o valor como moeda.
                                     const value = formatCurrency(context.parsed);
-
-                                    // Retorna o rótulo e o valor para o corpo do tooltip.
                                     return `${individualLabel} (${value})`;
                                 }
                             }
-                            // --- FIM DO AJUSTE DO TOOLTIP ---
                         }
                     }
                 }
@@ -481,19 +663,16 @@
 
         // --- MAIN SIMULATION LOGIC ---
         function updateSimulation() {
-            // 1. GET INPUTS
             const desiredNetAmount = parseFloat(netAmountInput.value);
             const termIndex = parseInt(loanTermSelect.value);
             const ageIndex = parseInt(ageRangeSelect.value);
             const numMonths = actualMonths[termIndex];
+            const ageRangeText = ageRangeSelect.options[ageRangeSelect.selectedIndex].text;
 
             netAmountLabel.textContent = formatCurrency(desiredNetAmount);
 
-            // 2. CALCULATE GROSS AMOUNT
             const qqmTermArrayIndex = getQqmTermIndex(numMonths);
             let currentQqmPercent = 0;
-            let grossAmount = 0;
-
             if (qqmTermArrayIndex !== -1 && qqmRates[qqmTermArrayIndex] && qqmRates[qqmTermArrayIndex][ageIndex] !== null) {
                 currentQqmPercent = qqmRates[qqmTermArrayIndex][ageIndex];
                 qqmEligibilityMessageEl.classList.add('hidden');
@@ -503,20 +682,14 @@
             }
             
             const denominator = (1 - tacRate - iofRate) * (1 - currentQqmPercent);
-            if (denominator > 0) {
-                grossAmount = desiredNetAmount / denominator;
-            } else {
-                grossAmount = 0;
-            }
+            const grossAmount = (denominator > 0) ? desiredNetAmount / denominator : 0;
             
-            // 3. CALCULATE ORIGINATION FEES
             const tacValue = grossAmount * tacRate;
             const iofValue = grossAmount * iofRate;
             const baseAmountForQqm = grossAmount - tacValue - iofValue;
             const qqmValue = baseAmountForQqm * currentQqmPercent;
             const totalOriginationFees = tacValue + qqmValue + iofValue;
             
-            // 4. UPDATE UI - ORIGINATION AND SUMMARY RESULTS
             grossAmountEl.textContent = formatCurrency(grossAmount);
             summaryNetAmountEl.textContent = formatCurrency(desiredNetAmount);
             tacValueEl.textContent = formatCurrency(tacValue); 
@@ -528,24 +701,18 @@
             qqmPercentEl.textContent = `(${formatPercent(currentQqmPercent)})`;
             iofPercentEl.textContent = `(${formatPercent(iofRate)})`;
 
-            // 5. CALCULATE AMORTIZATION TABLE AND MAINTENANCE FEES
             amortizationTableBody.innerHTML = ''; 
             
             let currentSaldoDevedor = grossAmount;
-            const constantAmortization = grossAmount <= 0 || numMonths === 0 ? 0 : grossAmount / numMonths; 
+            const constantAmortization = (grossAmount > 0 && numMonths > 0) ? grossAmount / numMonths : 0; 
             const borrowerCashFlows = [desiredNetAmount]; 
             const lenderCashFlows = [-grossAmount];
             
-            let totalJuros = 0;
-            let totalCorrecao = 0;
-            let totalAdmin = 0;
+            let totalJuros = 0, totalCorrecao = 0, totalAdmin = 0, totalPayable = 0, firstInstallmentValue = 0;
 
             for (let i = 1; i <= numMonths; i++) {
                 if (currentSaldoDevedor <= 0.01 && i > 1) { 
-                    const row = amortizationTableBody.insertRow();
-                    for(let j=0; j<7; j++) {
-                        row.insertCell().textContent = j === 0 ? i : formatCurrency(0); 
-                    }
+                    amortizationTableBody.innerHTML += `<tr><td>${i}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td></tr>`;
                     borrowerCashFlows.push(0);
                     lenderCashFlows.push(0);
                     continue; 
@@ -568,27 +735,23 @@
                 }
                 
                 let valorParcela = valorAmortizado + custoTotalMes;
+                if (i === 1) {
+                    firstInstallmentValue = valorParcela;
+                }
                 currentSaldoDevedor -= valorAmortizado;
                 if (currentSaldoDevedor < 0.01) { currentSaldoDevedor = 0; }
                 
                 totalJuros += jurosMes;
                 totalCorrecao += correcaoMes;
                 totalAdmin += adminMes;
+                totalPayable += valorParcela;
 
-                const row = amortizationTableBody.insertRow();
-                row.insertCell().textContent = i;
-                row.insertCell().textContent = formatCurrency(valorParcela);
-                row.insertCell().textContent = formatCurrency(correcaoMes);
-                row.insertCell().textContent = formatCurrency(jurosMes);
-                row.insertCell().textContent = formatCurrency(adminMes);
-                row.insertCell().textContent = formatCurrency(valorAmortizado);
-                row.insertCell().textContent = formatCurrency(currentSaldoDevedor);
+                amortizationTableBody.innerHTML += `<tr><td>${i}</td><td>${formatCurrency(valorParcela)}</td><td>${formatCurrency(correcaoMes)}</td><td>${formatCurrency(jurosMes)}</td><td>${formatCurrency(adminMes)}</td><td>${formatCurrency(valorAmortizado)}</td><td>${formatCurrency(currentSaldoDevedor)}</td></tr>`;
 
                 borrowerCashFlows.push(-valorParcela);
                 lenderCashFlows.push(valorParcela - adminMes);
             }
 
-            // 6. UPDATE UI - MAINTENANCE AND TOTALS
             const totalManutencao = totalJuros + totalCorrecao + totalAdmin;
             const totalAllFees = totalOriginationFees + totalManutencao;
             totalInterestValueEl.textContent = formatCurrency(totalJuros);
@@ -597,45 +760,90 @@
             totalMaintenanceFeesEl.textContent = formatCurrency(totalManutencao);
             totalAllFeesValueEl.textContent = formatCurrency(totalAllFees);
             
-            // 7. UPDATE CHART
-            updateChartData({
-                tac: tacValue,
-                qqm: qqmValue,
-                iof: iofValue,
-                interest: totalJuros,
-                inflation: totalCorrecao,
-                admin: totalAdmin
-            });
+            updateChartData({ tac: tacValue, qqm: qqmValue, iof: iofValue, interest: totalJuros, inflation: totalCorrecao, admin: totalAdmin });
 
-            // 8. CALCULATE AND DISPLAY FINANCIAL INDICATORS
-            if (numMonths > 0 && grossAmount > 0) {
-                // Borrower's CET
-                const monthlyCET = calculateIRR(borrowerCashFlows, 0.005);
-                const annualCET = Math.pow(1 + monthlyCET, 12) - 1;
-                cetMonthlyEl.textContent = formatPercent(monthlyCET);
-                cetAnnualEl.textContent = formatPercent(annualCET);
-                
-                // Lender's TIR
-                const monthlyLenderTIR = calculateIRR(lenderCashFlows, 0.005);
-                const annualLenderTIR = Math.pow(1 + monthlyLenderTIR, 12) - 1;
-                lenderTirMonthlyEl.textContent = formatPercent(monthlyLenderTIR);
-                lenderTirAnnualEl.textContent = formatPercent(annualLenderTIR);
+            const monthlyCET = (numMonths > 0 && grossAmount > 0) ? calculateIRR(borrowerCashFlows, 0.005) : 0;
+            const annualCET = Math.pow(1 + monthlyCET, 12) - 1;
+            cetMonthlyEl.textContent = formatPercent(monthlyCET);
+            cetAnnualEl.textContent = formatPercent(annualCET);
+            
+            const monthlyLenderTIR = (numMonths > 0 && grossAmount > 0) ? calculateIRR(lenderCashFlows, 0.005) : 0;
+            const annualLenderTIR = Math.pow(1 + monthlyLenderTIR, 12) - 1;
+            lenderTirMonthlyEl.textContent = formatPercent(monthlyLenderTIR);
+            lenderTirAnnualEl.textContent = formatPercent(annualLenderTIR);
 
-            } else {
-                cetMonthlyEl.textContent = formatPercent(0);
-                cetAnnualEl.textContent = formatPercent(0);
-                lenderTirMonthlyEl.textContent = formatPercent(0);
-                lenderTirAnnualEl.textContent = formatPercent(0);
-            }
+            simulationData = {
+                grossAmount: formatCurrency(grossAmount),
+                netAmount: formatCurrency(desiredNetAmount),
+                loanTerm: `${numMonths} meses`,
+                ageRange: ageRangeText,
+                firstInstallment: formatCurrency(firstInstallmentValue),
+                cetAnnual: formatPercent(annualCET),
+                cetMonthly: formatPercent(monthlyCET),
+                totalPayable: formatCurrency(totalPayable),
+                rates: {
+                    interestAnnual: Math.pow(1 + monthlyInterestRate, 12) - 1,
+                    adminAnnual: Math.pow(1 + monthlyAdminRate, 12) - 1,
+                    monthlyInterest: monthlyInterestRate,
+                    monthlyAdmin: monthlyAdminRate,
+                    tac: tacRate,
+                    iof: iofRate,
+                    qqm: currentQqmPercent
+                },
+                raw: {
+                    grossAmount, tacValue, iofValue, qqmValue,
+                    totalJuros, totalCorrecao, totalAdmin, desiredNetAmount
+                }
+            };
+        }
+
+        // --- CCB GENERATION ---
+        function generateCCB() {
+            const { raw, rates } = simulationData;
+            const percentOfFinanced = (value) => raw.grossAmount > 0 ? formatPercent(value / raw.grossAmount, 2) : formatPercent(0, 2);
+
+            document.getElementById('ccbContractNumber').textContent = Date.now();
+            document.getElementById('ccbGrossAmount').textContent = simulationData.grossAmount;
+            document.getElementById('ccbNetAmount').textContent = simulationData.netAmount;
+            document.getElementById('ccbLoanTerm').textContent = simulationData.loanTerm;
+            document.getElementById('ccbFirstInstallment').textContent = simulationData.firstInstallment;
+            document.getElementById('ccbAge').textContent = simulationData.ageRange;
+            document.getElementById('ccbDate').textContent = new Date().toLocaleDateString('pt-BR');
+
+            // Populate Rates
+            document.getElementById('ccbInterestRate').textContent = `${formatPercent(rates.interestAnnual)} a.a. (${formatPercent(rates.monthlyInterest)} a.m.)`;
+            document.getElementById('ccbAdminRate').textContent = `${formatPercent(rates.adminAnnual)} a.a. (${formatPercent(rates.monthlyAdmin)} a.m.)`;
+            document.getElementById('ccbTacRate').textContent = formatPercent(rates.tac);
+            document.getElementById('ccbIofRate').textContent = formatPercent(rates.iof);
+            document.getElementById('ccbQqmRate').textContent = formatPercent(rates.qqm, 4);
+
+            // Populate CET Details
+            document.getElementById('cetDetailNetAmount').textContent = formatCurrency(raw.desiredNetAmount);
+            document.getElementById('cetDetailInterest').textContent = formatCurrency(raw.totalJuros);
+            document.getElementById('cetDetailInterestPercent').textContent = percentOfFinanced(raw.totalJuros);
+            document.getElementById('cetDetailInflation').textContent = formatCurrency(raw.totalCorrecao);
+            document.getElementById('cetDetailInflationPercent').textContent = percentOfFinanced(raw.totalCorrecao);
+            document.getElementById('cetDetailAdmin').textContent = formatCurrency(raw.totalAdmin);
+            document.getElementById('cetDetailAdminPercent').textContent = percentOfFinanced(raw.totalAdmin);
+            document.getElementById('cetDetailTac').textContent = formatCurrency(raw.tacValue);
+            document.getElementById('cetDetailTacPercent').textContent = percentOfFinanced(raw.tacValue);
+            document.getElementById('cetDetailIof').textContent = formatCurrency(raw.iofValue);
+            document.getElementById('cetDetailIofPercent').textContent = percentOfFinanced(raw.iofValue);
+            document.getElementById('cetDetailQqm').textContent = formatCurrency(raw.qqmValue);
+            document.getElementById('cetDetailQqmPercent').textContent = percentOfFinanced(raw.qqmValue);
+            document.getElementById('cetDetailTotalPayable').textContent = simulationData.totalPayable;
+            document.getElementById('cetDetailCetMonthly').textContent = `CET Mensal: ${simulationData.cetMonthly}`;
+            document.getElementById('cetDetailCetAnnual').textContent = `CET Anual: ${simulationData.cetAnnual}`;
+
+            mainContent.classList.add('hidden');
+            ccbSection.classList.remove('hidden');
+            window.scrollTo(0, 0);
         }
 
         // --- UI HELPERS ---
         function updateChartData(costs) {
-            // Outer ring - Maintenance
             costsChart.data.datasets[0].data = [costs.interest, costs.inflation, costs.admin];
-            // Inner ring - Origination
             costsChart.data.datasets[1].data = [costs.tac, costs.qqm, costs.iof];
-            
             costsChart.update();
         }
         
@@ -654,11 +862,19 @@
         loanTermSelect.addEventListener('change', updateSimulation);
         ageRangeSelect.addEventListener('change', updateSimulation);
         tabButtons.forEach(button => button.addEventListener('click', handleTabClick));
+        
+        contractButton.addEventListener('click', generateCCB);
+        backToSimulatorButton.addEventListener('click', () => {
+            ccbSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+        
         document.addEventListener('DOMContentLoaded', () => {
             initializeChart();
-            loanTermSelect.value = "2"; // Define 12 meses como padrão ao carregar
+            loanTermSelect.value = "2";
             updateSimulation();
-            tabButtons[0].click(); // Activate the first tab on load
+            tabButtons[0].click();
         });
 
     </script>
