@@ -3,903 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Custos de Empréstimo - PORTUS (Corrigido)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Materiais de Apoio - Assessoria Financeira</title>
     <style>
+        /* --- Estilos Gerais --- */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
         }
-        .tab-button.active {
-            border-color: #2563eb;
-            color: #2563eb;
+
+        /* --- Container Principal --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        /* --- Cabeçalho --- */
+        header {
+            background-color: #005a9c; /* Azul corporativo */
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
             font-weight: 600;
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 350px;
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
+
+        /* --- Seções de Conteúdo --- */
+        .material-section {
+            padding: 30px;
+            border-bottom: 1px solid #e0e5e9;
         }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #2563eb;
-            cursor: pointer;
-            border-radius: 50%;
+        .material-section:last-child {
+            border-bottom: none;
         }
-        input[type=range]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #2563eb;
-            cursor: pointer;
-            border-radius: 50%;
+        .material-section h2 {
+            font-size: 1.8em;
+            color: #004070;
+            margin-top: 0;
+            border-bottom: 2px solid #e0e5e9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+        .material-section p {
+            font-size: 1em;
+            color: #555;
         }
-        table {
+
+        /* --- Estilos da Tabela (Material 1) --- */
+        .financial-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.95em;
         }
-        th, td {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            text-align: right;
-        }
-        th {
-            background-color: #f1f5f9;
-            font-weight: 600;
-            text-align: center;
-        }
-        tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-        /* Estilos para a CCB */
-        #ccb-section {
-            border: 1px solid #d1d5db;
-        }
-        #ccb-section h2, #ccb-section h3 {
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
-        }
-        #ccb-section p {
-            margin-bottom: 4px;
-        }
-        #ccb-section .data-field {
-            font-weight: 600;
-            color: #1f2937;
-        }
-        .signature-line {
-            border-top: 1px solid #374151;
-            margin-top: 40px;
-            padding-top: 8px;
-            text-align: center;
-        }
-        .cet-table td:first-child {
+        .financial-table th, .financial-table td {
+            padding: 12px 15px;
             text-align: left;
-            font-weight: 500;
+            border-bottom: 1px solid #e0e5e9;
+        }
+        .financial-table thead th {
+            background-color: #f0f4f7;
+            font-weight: 600;
+            color: #333;
+        }
+        .financial-table .category-header td {
+            background-color: #fafcfe;
+            font-weight: bold;
+            color: #005a9c;
+        }
+        .financial-table .total-row td {
+            font-weight: bold;
+            background-color: #f0f4f7;
+        }
+        .financial-table strong {
+            color: #004070;
+        }
+
+        /* --- Estilos do Orçamento (Material 2) --- */
+        .budget-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .budget-card {
+            flex: 1;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e0e5e9;
+            text-align: center;
+        }
+        .budget-card h3 {
+            margin-top: 0;
+            font-size: 2.5em;
+            color: #005a9c;
+        }
+        .budget-card h4 {
+            font-size: 1.2em;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .budget-card ul {
+            list-style-type: none;
+            padding: 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+        
+        /* --- Estilos do Checklist (Material 3) --- */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist h3 {
+            color: #004070;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .checklist li {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid #005a9c;
+            display: flex;
+            align-items: center;
+        }
+        .checklist li::before {
+            content: '☐';
+            font-size: 1.5em;
+            margin-right: 15px;
+            color: #005a9c;
+        }
+        
+        /* --- Rodapé --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        
+        /* --- Responsividade --- */
+        @media (max-width: 768px) {
+            .budget-container {
+                flex-direction: column;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+            .material-section h2 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
-<body class="text-gray-800">
+<body>
 
-    <div class="container mx-auto p-4 md:p-8">
-        
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Estrutura de Custos de Empréstimos PORTUS</h1>
-            <p class="mt-2 text-lg text-gray-600">Uma análise interativa dos encargos de empréstimo.</p>
+    <div class="container">
+        <header>
+            <h1>Materiais de Apoio</h1>
+            <p>Sua Jornada para a Prosperidade Financeira</p>
         </header>
 
-        <main id="main-content">
-            <section id="simulator" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-8">
-                <h2 class="text-2xl font-bold mb-6 text-center">Simulador Interativo de Custos</h2>
-                <p class="text-center text-gray-600 mb-8">Ajuste os valores abaixo para entender como os diferentes fatores impactam os custos do seu empréstimo.</p>
+        <section class="material-section">
+            <h2>Material 1: Diagnóstico Financeiro Completo</h2>
+            <p>Este é o nosso ponto de partida. Use esta estrutura para preencher com seus dados e criarmos juntos um panorama claro da sua vida financeira atual. Use a média dos últimos 3 meses para valores variáveis.</p>
+            <table class="financial-table">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Item</th>
+                        <th>Valor Mensal (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="category-header"><td colspan="3">1. Rendas Líquidas</td></tr>
+                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 1)</td><td></td></tr>
+                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 2)</td><td></td></tr>
+                    <tr><td>Renda</td><td>Pró-Labore (Consultório PJ)</td><td></td></tr>
+                    <tr class="total-row"><td><strong>TOTAL DE RENDAS</strong></td><td></td><td></td></tr>
 
-                <!-- NOVA SEÇÃO PARA TAXAS -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-6 bg-gray-50 rounded-lg border">
-                    <div>
-                        <label for="interestRateInput" class="block text-sm font-medium text-gray-700">Taxa de Juros (a.a. %)</label>
-                        <input type="number" id="interestRateInput" value="5.21" step="0.01" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                    </div>
-                    <div>
-                        <label for="adminRateInput" class="block text-sm font-medium text-gray-700">Taxa de Administração (a.a. %)</label>
-                        <input type="number" id="adminRateInput" value="5.00" step="0.01" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                    </div>
-                </div>
+                    <tr class="category-header"><td colspan="3">2. Despesas Fixas (Pessoa Física)</td></tr>
+                    <tr><td>Moradia</td><td>Aluguel / Financiamento</td><td></td></tr>
+                    <tr><td>Contas</td><td>Luz, Água, Gás, Internet</td><td></td></tr>
+                    <tr><td>Saúde</td><td>Planos de Saúde</td><td></td></tr>
+                    <tr><td>Educação</td><td>Mensalidades</td><td></td></tr>
+                    <tr class="total-row"><td><strong>SUBTOTAL FIXAS</strong></td><td></td><td></td></tr>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <tr class="category-header"><td colspan="3">3. Despesas Variáveis (Pessoa Física)</td></tr>
+                    <tr><td>Alimentação</td><td>Supermercado / Feira</td><td></td></tr>
+                    <tr><td>Transporte</td><td>Combustível, Apps</td><td></td></tr>
+                    <tr><td>Lazer</td><td>Restaurantes, Viagens</td><td></td></tr>
+                    <tr><td>Cuidados</td><td>Academia, Salão</td><td></td></tr>
+                    <tr class="total-row"><td><strong>SUBTOTAL VARIÁVEIS</strong></td><td></td><td></td></tr>
                     
-                    <div class="space-y-6">
-                        <div>
-                            <label for="netAmountInput" class="block text-sm font-medium text-gray-700">Valor Líquido Desejado: <span id="netAmountLabel" class="font-bold text-blue-600">R$ 50.000</span></label>
-                            <input type="range" id="netAmountInput" min="1000" max="100000" step="1000" value="50000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                        </div>
-                        
-                        <div>
-                            <label for="loanTerm" class="block text-sm font-medium text-gray-700">Prazo de Amortização</label>
-                            <select id="loanTerm" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                <option value="0">1 mês</option>
-                                <option value="1">6 meses</option>
-                                <option value="2" selected>12 meses</option>
-                                <option value="3">18 meses</option>
-                                <option value="4">24 meses</option>
-                                <option value="5">30 meses</option>
-                                <option value="6">36 meses</option>
-                                <option value="7">42 meses</option>
-                                <option value="8">48 meses</option>
-                                <option value="9">54 meses</option>
-                                <option value="10">60 meses</option>
-                            </select>
-                        </div>
+                    <tr class="category-header"><td colspan="3">4. Despesas do Consultório (Pessoa Jurídica)</td></tr>
+                    <tr><td>Estrutura</td><td>Aluguel da Sala / Condomínio</td><td></td></tr>
+                    <tr><td>Operação</td><td>Salários, Impostos (DAS)</td><td></td></tr>
+                    <tr><td>Administrativo</td><td>Contabilidade, Softwares</td><td></td></tr>
+                    <tr class="total-row"><td><strong>SUBTOTAL PJ</strong></td><td></td><td></td></tr>
 
-                        <div>
-                            <label for="ageRange" class="block text-sm font-medium text-gray-700">Faixa Etária</label>
-                            <select id="ageRange" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                <option value="0">Entre 18 e 59 anos</option>
-                                <option value="1">Entre 60 e 64 anos</option>
-                                <option value="2">Entre 65 e 69 anos</option>
-                                <option value="3">Entre 70 e 74 anos</option>
-                                <option value="4">Entre 75 e 79 anos</option>
-                                <option value="5">Acima de 79 anos</option>
-                            </select>
-                        </div>
-                    </div>
+                    <tr class="category-header"><td colspan="3">5. Resumo Financeiro</td></tr>
+                    <tr class="total-row"><td colspan="2"><strong>FLUXO DE CAIXA MENSAL (Rendas - Total Despesas)</strong></td><td></td></tr>
+                </tbody>
+            </table>
+        </section>
 
-                    <div class="space-y-4">
-                        <div class="bg-blue-50 p-4 rounded-lg text-center border border-blue-200">
-                            <p class="text-lg font-medium text-blue-800">Valor Líquido Desejado</p>
-                            <p id="summaryNetAmountEl" class="text-3xl md:text-4xl font-bold text-blue-900">R$ 0,00</p>
-                        </div>
-                        <div class="bg-gray-800 text-white p-4 rounded-lg text-center">
-                            <p class="text-lg font-medium text-gray-300">Valor Bruto do Contrato</p>
-                            <p id="grossAmountEl" class="text-3xl md:text-4xl font-bold">R$ 0,00</p>
-                        </div>
-                    </div>
+        <section class="material-section">
+            <h2>Material 2: Modelo de Orçamento 50/30/20</h2>
+            <p>Com os dados do diagnóstico, vamos organizar suas finanças pessoais usando este método simples e poderoso. A ideia é dividir sua renda líquida em três grandes categorias, garantindo equilíbrio entre o presente e o futuro.</p>
+            <div class="budget-container">
+                <div class="budget-card">
+                    <h3>50%</h3>
+                    <h4>Gastos Essenciais</h4>
+                    <ul>
+                        <li>Moradia</li>
+                        <li>Contas de Consumo</li>
+                        <li>Supermercado</li>
+                        <li>Saúde e Educação</li>
+                    </ul>
                 </div>
-
-                <div class="mt-10 border-t pt-8">
-                    <h3 class="text-xl font-bold text-center mb-6">Resultados da Simulação</h3>
-                    
-                    <div class="mb-8">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center md:text-left">Encargos de Originação</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <p class="text-sm text-blue-800">Taxa de Aprovação - TAC <span id="tacPercent" class="font-bold text-blue-900 text-xs"></span></p>
-                                <p id="tacValue" class="text-2xl font-bold text-blue-900">R$ 0,00</p>
-                            </div>
-                            <div class="bg-purple-50 p-4 rounded-lg">
-                                <p class="text-sm text-purple-800">Taxa de Risco - QQM <span id="qqmPercent" class="font-bold text-purple-900 text-xs"></span></p>
-                                <p id="qqmValue" class="text-2xl font-bold text-purple-900">R$ 0,00</p>
-                                <p id="qqmEligibilityMessage" class="text-xs text-red-600 mt-1 hidden">Não Elegível</p>
-                            </div>
-                            <div class="bg-indigo-50 p-4 rounded-lg">
-                                <p class="text-sm text-indigo-800">IOF <span id="iofPercent" class="font-bold text-indigo-900 text-xs"></span></p>
-                                <p id="iofValue" class="text-2xl font-bold text-indigo-900">R$ 0,00</p>
-                            </div>
-                             <div class="bg-orange-50 p-4 rounded-lg">
-                                <p class="text-sm text-orange-800">Total de Originação</p>
-                                <p id="totalOriginationFees" class="text-2xl font-bold text-orange-900">R$ 0,00</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-8">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center md:text-left">Encargos de Manutenção (Estimativa Total no Período)</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-                            <div class="bg-green-50 p-4 rounded-lg">
-                                 <p class="text-sm text-green-800">Total Juros</p>
-                                 <p id="totalInterestValue" class="text-2xl font-bold text-green-900">R$ 0,00</p>
-                            </div>
-                            <div class="bg-amber-50 p-4 rounded-lg">
-                                 <p class="text-sm text-amber-800">Total Correção Monetária</p>
-                                 <p id="totalInflationValue" class="text-2xl font-bold text-amber-900">R$ 0,00</p>
-                            </div>
-                            <div class="bg-cyan-50 p-4 rounded-lg">
-                                 <p class="text-sm text-cyan-800">Total Taxa Admin.</p>
-                                 <p id="totalAdminFeeValue" class="text-2xl font-bold text-cyan-900">R$ 0,00</p>
-                            </div>
-                            <div class="bg-orange-50 p-4 rounded-lg">
-                                <p class="text-sm text-orange-800">Total de Manutenção</p>
-                                <p id="totalMaintenanceFees" class="text-2xl font-bold text-orange-900">R$ 0,00</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-10">
-                         <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center">Composição Detalhada dos Encargos</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                            <div class="chart-container">
-                                <canvas id="costsChart"></canvas>
-                            </div>
-                            <div class="bg-orange-50 p-6 rounded-lg text-center">
-                                <p class="text-xl font-medium text-orange-800">Total de Encargos</p>
-                                <p id="totalAllFeesValue" class="text-4xl md:text-5xl font-bold text-orange-900">R$ 0,00</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="financial-indicators-section" class="mt-10 border-t pt-8">
-                        <h3 class="text-xl font-bold text-center mb-6">Indicadores Financeiros</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="text-center">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Custo para o Mutuário (CET)</h4>
-                                <p class="text-gray-600 mb-4 text-sm">Custo total da operação para quem toma o empréstimo, considerando o valor líquido recebido vs. parcelas pagas.</p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-purple-50 p-4 rounded-lg">
-                                        <p class="text-sm text-purple-800">CET a.m.</p>
-                                        <p id="cetMonthly" class="text-2xl font-bold text-purple-900">0,00%</p>
-                                    </div>
-                                    <div class="bg-purple-50 p-4 rounded-lg">
-                                        <p class="text-sm text-purple-800">CET a.a.</p>
-                                        <p id="cetAnnual" class="text-2xl font-bold text-purple-900">0,00%</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Rentabilidade para o Concessor (TIR)</h4>
-                                <p class="text-gray-600 mb-4 text-sm">Retorno da operação, considerando o valor bruto desembolsado vs. as parcelas recebidas (descontada a taxa de adm.).</p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-indigo-50 p-4 rounded-lg">
-                                        <p class="text-sm text-indigo-800">TIR a.m.</p>
-                                        <p id="lenderTirMonthly" class="text-2xl font-bold text-indigo-900">0,00%</p>
-                                    </div>
-                                    <div class="bg-indigo-50 p-4 rounded-lg">
-                                        <p class="text-sm text-indigo-800">TIR a.a.</p>
-                                        <p id="lenderTirAnnual" class="text-2xl font-bold text-indigo-900">0,00%</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="budget-card">
+                    <h3>30%</h3>
+                    <h4>Estilo de Vida</h4>
+                     <ul>
+                        <li>Lazer e Restaurantes</li>
+                        <li>Viagens e Hobbies</li>
+                        <li>Compras</li>
+                        <li>Academia</li>
+                    </ul>
                 </div>
-            </section>
-            
-            <section id="details" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mt-8">
-                <h3 class="text-xl font-bold text-center mb-6">Tabela de Amortização Mensal Estimada (Sistema SAC)</h3>
-                <p class="text-center text-gray-600 mb-6">Esta tabela detalha a composição de cada parcela mensal, incluindo juros, correção monetária, taxa administrativa, valor amortizado e saldo devedor. </p>
-                <div class="table-container rounded-lg shadow-md mb-10">
-                    <table class="min-w-full bg-white">
-                        <thead>
-                            <tr>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Parcela</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Valor da Parcela</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Correção Monetária</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Juros</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Taxa Administrativa</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Valor Amortizado</th>
-                                <th class="py-2 px-4 bg-gray-100 text-gray-700 text-sm font-semibold uppercase tracking-wider">Saldo Devedor</th>
-                            </tr>
-                        </thead>
-                        <tbody id="amortizationTableBody">
-                        </tbody>
-                    </table>
+                <div class="budget-card">
+                    <h3>20%</h3>
+                    <h4>Metas Financeiras</h4>
+                     <ul>
+                        <li>Reserva de Emergência</li>
+                        <li>Investimentos</li>
+                        <li>Quitação de Dívidas</li>
+                        <li>Aposentadoria</li>
+                    </ul>
                 </div>
-
-                <!-- Botão para Contratar -->
-                <div class="text-center mt-8">
-                    <button id="contractButton" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
-                        Contratar Empréstimo
-                    </button>
-                </div>
-
-                <h2 class="text-2xl font-bold mt-12 mb-6 text-center">Detalhamento dos Encargos</h2>
-                <p class="text-center text-gray-600 mb-8">Abaixo, você encontra uma explicação detalhada de cada componente do custo do seu empréstimo.</p>
-                <div class="border-b border-gray-200 mb-6">
-                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
-                        <button data-tab="origination" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
-                            Encargos de Originação
-                        </button>
-                        <button data-tab="maintenance" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
-                            Encargos de Manutenção
-                        </button>
-                        <button data-tab="final" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
-                            Considerações Finais
-                        </button>
-                    </nav>
-                </div>
-
-                <div id="tab-content" class="prose max-w-none">
-                    <div id="origination-content" class="tab-pane">
-                        <h3 class="font-bold text-lg mb-2">Taxa de Aprovação de Crédito (TAC)</h3>
-                        <p class="mb-4">Este encargo financeiro é cobrado no momento da concessão, repactuação ou novação do crédito. Sua finalidade é cobrir os custos administrativos e operacionais associados à análise, aprovação e formalização do Contrato de Empréstimo. O valor corresponde a 0,5% sobre o montante total do contrato. É uma cobrança única, realizada no início da operação.</p>
-                        
-                        <h3 class="font-bold text-lg mb-2">Taxa de Risco (QQM - Quota de Quitação por Morte)</h3>
-                        <p class="mb-4">A Taxa de Risco é um encargo destinado à constituição de um Fundo de Quitação por Morte (FQM), que garante a liquidação integral do saldo devedor do empréstimo em caso de falecimento do mutuário. Este encargo é cobrado em parcela única no momento da concessão do crédito. As alíquotas são variáveis, dependendo da faixa etária do mutuário e do prazo de amortização do empréstimo.</p>
-
-                        <h3 class="font-bold text-lg mb-2">IOF (Imposto sobre Operações Financeiras)</h3>
-                        <p>O IOF é um tributo federal incidente sobre operações de crédito. No contexto dos empréstimos da PORTUS, é aplicado sobre o valor total contratado, conforme a legislação vigente. Sua alíquota e metodologia de cálculo são definidas pela Receita Federal do Brasil.</p>
-                    </div>
-                    <div id="maintenance-content" class="tab-pane hidden">
-                        <h3 class="font-bold text-lg mb-2">Taxa de Juros Real</h3>
-                        <p class="mb-4">Representa o principal componente de remuneração do capital emprestado. A taxa nominal é de 5,21% ao ano, aplicada mensalmente sobre o saldo devedor. A definição desta taxa considera a Meta Atuarial dos planos de benefícios (INPC + 4,71%), acrescida de 0,48% para cobrir eventuais inadimplências e flutuações de mercado, configurando um custo fixo para o mutuário durante a amortização.</p>
-
-                        <h3 class="font-bold text-lg mb-2">Atualização Monetária</h3>
-                        <p class="mb-4">Tem como objetivo preservar o poder de compra do capital emprestado, corrigindo o saldo devedor pela inflação. A PORTUS utiliza o Índice Nacional de Preços ao Consumidor (INPC) como indexador, com uma defasagem de dois meses. Para fins de simulação, é utilizada a meta de inflação de 5% ao ano. A adoção do INPC visa assegurar consistência com a meta atuarial dos planos de benefícios.</p>
-
-                        <h3 class="font-bold text-lg mb-2">Taxa de Administração</h3>
-                        <p>Encargo mensal para cobrir os custos operacionais e de gestão do contrato. A taxa é de 5% ao ano e incide sobre o saldo devedor. Sua correta calibração é fundamental para a sustentabilidade da operação de empréstimos.</p>
-                    </div>
-                    <div id="final-content" class="tab-pane hidden">
-                        <p>É de suma importância que os mutuários da PORTUS compreendam integralmente a estrutura da taxa de juros e os encargos incidentes. A transparência na apresentação dessas informações é crucial para que o mutuário possa tomar decisões financeiras conscientes. As taxas e encargos aqui apresentados podem sofrer alterações, em conformidade com o Contrato de Abertura de Crédito e o Regulamento de Empréstimos. Eventuais modificações nas condições serão realizadas a critério da Diretoria Executiva da PORTUS ou em função de alterações na legislação aplicável. Recomenda-se que os mutuários consultem sempre os documentos oficiais da PORTUS e, em caso de dúvidas, busquem esclarecimentos junto aos canais de atendimento da instituição.</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Seção da Cédula de Crédito Bancário (CCB) - Inicialmente oculta -->
-        <section id="ccb-section" class="hidden bg-white p-8 md:p-12 rounded-2xl shadow-lg">
-            <h2 class="text-center text-2xl font-bold text-gray-800">CÉDULA DE CRÉDITO BANCÁRIO</h2>
-            <p class="text-center text-gray-600 mb-8">Número do Contrato: <span id="ccbContractNumber" class="font-mono"></span></p>
-
-            <div class="space-y-8 mb-8">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-700">EMITENTE (CREDOR)</h3>
-                    <p>Nome: <span class="data-field">PORTUS - Instituto de Seguridade Social</span></p>
-                    <p>CNPJ: <span class="data-field">[00.000.000/0001-00]</span></p>
-                    <p>Endereço: <span class="data-field">[Endereço Completo da PORTUS]</span></p>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-700">TOMADOR (DEVEDOR)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                        <p>Nome: <span class="data-field">[Nome Completo do Mutuário]</span></p>
-                        <p>CPF: <span class="data-field">[000.000.000-00]</span></p>
-                        <p>Idade: <span id="ccbAge" class="data-field"></span></p>
-                        <p>Plano de Benefício: <span class="data-field">PBP1</span></p>
-                        <p>Declaração de Saúde Apresentada: <span class="data-field">[Sim/Não]</span></p>
-                    </div>
-                    <p class="mt-2">Endereço: <span class="data-field">[Endereço Completo do Mutuário]</span></p>
-                    <p>Dados para Depósito: <span class="data-field">[Banco, Agência, Conta Corrente]</span></p>
-                </div>
-            </div>
-
-            <h3 class="text-lg font-semibold text-gray-700">CONDIÇÕES DO CRÉDITO</h3>
-            <div class="space-y-2 bg-gray-50 p-6 rounded-lg mb-8">
-                <p>Valor do Crédito (Bruto): <span id="ccbGrossAmount" class="font-bold text-lg data-field"></span></p>
-                <p>Valor Líquido Liberado em Conta: <span id="ccbNetAmount" class="font-bold text-lg text-green-600 data-field"></span></p>
-                <p>Prazo de Pagamento: <span id="ccbLoanTerm" class="data-field"></span></p>
-                <p>Valor da 1ª Parcela: <span id="ccbFirstInstallment" class="font-bold text-lg data-field"></span></p>
-            </div>
-            
-            <h3 class="text-lg font-semibold text-gray-700">TAXAS E ENCARGOS APLICADOS</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Taxa de Juros Real</p>
-                    <p id="ccbInterestRate" class="text-lg font-bold data-field"></p>
-                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Correção Monetária</p>
-                    <p id="ccbInflationRate" class="text-lg font-bold data-field">INPC mensal com 2 meses de defasagem</p>
-                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Taxa de Administração</p>
-                    <p id="ccbAdminRate" class="text-lg font-bold data-field"></p>
-                    <p class="text-xs text-gray-500">sobre o Saldo Devedor</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Taxa de Aprovação (TAC)</p>
-                    <p id="ccbTacRate" class="text-lg font-bold data-field"></p>
-                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Imposto (IOF)</p>
-                    <p id="ccbIofRate" class="text-lg font-bold data-field"></p>
-                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-sm text-gray-600">Taxa de Risco (QQM)</p>
-                    <p id="ccbQqmRate" class="text-lg font-bold data-field"></p>
-                    <p class="text-xs text-gray-500">sobre o Valor do Contrato</p>
-                </div>
-            </div>
-
-            <h3 class="text-lg font-semibold text-gray-700">DEMONSTRATIVO DO CUSTO EFETIVO TOTAL (CET)</h3>
-            <div class="table-container rounded-lg shadow-md mb-10">
-                <table class="min-w-full bg-white cet-table">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Componente</th>
-                            <th>Valor (R$)</th>
-                            <th>Percentual sobre o Valor Financiado (%)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Valor do Crédito (Líquido Liberado)</td>
-                            <td id="cetDetailNetAmount"></td>
-                            <td>-</td>
-                        </tr>
-                        <tr class="bg-gray-100">
-                            <td colspan="3" class="font-bold text-left">Encargos Inclusos no CET:</td>
-                        </tr>
-                        <tr>
-                            <td>(+) Juros (Projetado)</td>
-                            <td id="cetDetailInterest"></td>
-                            <td id="cetDetailInterestPercent"></td>
-                        </tr>
-                        <tr>
-                            <td>(+) Correção Monetária (Projetado)</td>
-                            <td id="cetDetailInflation"></td>
-                            <td id="cetDetailInflationPercent"></td>
-                        </tr>
-                        <tr>
-                            <td>(+) Taxa de Administração (Projetado)</td>
-                            <td id="cetDetailAdmin"></td>
-                            <td id="cetDetailAdminPercent"></td>
-                        </tr>
-                        <tr>
-                            <td>(+) Taxa de Aprovação de Crédito (TAC)</td>
-                            <td id="cetDetailTac"></td>
-                            <td id="cetDetailTacPercent"></td>
-                        </tr>
-                        <tr>
-                            <td>(+) Imposto sobre Operações Financeiras (IOF)</td>
-                            <td id="cetDetailIof"></td>
-                            <td id="cetDetailIofPercent"></td>
-                        </tr>
-                        <tr>
-                            <td>(+) Taxa de Risco (QQM)</td>
-                            <td id="cetDetailQqm"></td>
-                            <td id="cetDetailQqmPercent"></td>
-                        </tr>
-                        <tr class="bg-gray-200 font-bold">
-                            <td>(=) Valor Total a Pagar</td>
-                            <td id="cetDetailTotalPayable"></td>
-                            <td>-</td>
-                        </tr>
-                        <tr class="bg-blue-100 font-bold text-blue-800">
-                            <td>Custo Efetivo Total (CET)</td>
-                            <td id="cetDetailCetMonthly"></td>
-                            <td id="cetDetailCetAnnual"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="text-sm text-gray-600 space-y-4">
-                <p>O TOMADOR declara ter recebido, lido e compreendido todos os termos e condições desta Cédula de Crédito Bancário, concordando com todas as suas cláusulas e obrigações, incluindo o Custo Efetivo Total (CET) e demais encargos aqui especificados.</p>
-                <p>Esta Cédula de Crédito Bancário é emitida em caráter irrevogável e irretratável, constituindo título executivo extrajudicial nos termos da legislação aplicável.</p>
-            </div>
-
-            <div class="mt-12 grid grid-cols-2 gap-8 text-center">
-                <div>
-                    <div class="signature-line">
-                        <p>PORTUS - Instituto de Seguridade Social (Emitente)</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="signature-line">
-                        <p>[Nome Completo do Mutuário] (Tomador)</p>
-                    </div>
-                </div>
-            </div>
-            
-            <p class="text-center mt-8 text-sm text-gray-500">Rio de Janeiro, <span id="ccbDate"></span></p>
-
-            <div class="text-center mt-12">
-                <button id="backToSimulatorButton" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors duration-300 shadow-md">
-                    Voltar ao Simulador
-                </button>
             </div>
         </section>
 
-        <footer class="text-center mt-12 py-4 border-t">
-            <p class="text-sm text-gray-500">&copy; 2025 PORTUS. Todos os direitos reservados.</p>
+        <section class="material-section">
+            <h2>Material 3: Checklist para Separação PF x PJ</h2>
+            <p>Esta é a regra de ouro para o seu sucesso financeiro. Siga este checklist para garantir que as finanças do consultório e as suas finanças pessoais nunca mais se misturem.</p>
+            <ul class="checklist">
+                <h3>Ações Imediatas</h3>
+                <li>Abrir uma Conta Bancária exclusiva para a PJ.</li>
+                <li>Solicitar um Cartão de Crédito exclusivo para a PJ.</li>
+                <li>Definir um valor fixo de Pró-Labore (seu salário da PJ).</li>
+                <li>Agendar a transferência automática mensal do Pró-Labore (PJ para PF).</li>
+                
+                <h3>Monitoramento Contínuo</h3>
+                <li>NUNCA pagar uma conta pessoal com recursos da PJ.</li>
+                <li>NUNCA pagar uma despesa do consultório com recursos da PF.</li>
+                <li>Revisar mensalmente as faturas dos dois cartões.</li>
+                <li>Guardar todos os comprovantes e recibos da PJ.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>Este material é o primeiro passo da nossa jornada. Estou à disposição para esclarecer qualquer dúvida.</p>
         </footer>
 
     </div>
 
-    <script>
-        // --- ELEMENT REFERENCES ---
-        const netAmountInput = document.getElementById('netAmountInput');
-        const netAmountLabel = document.getElementById('netAmountLabel');
-        const loanTermSelect = document.getElementById('loanTerm');
-        const ageRangeSelect = document.getElementById('ageRange');
-        const interestRateInput = document.getElementById('interestRateInput');
-        const adminRateInput = document.getElementById('adminRateInput');
-
-        const tacValueEl = document.getElementById('tacValue');
-        const qqmValueEl = document.getElementById('qqmValue');
-        const iofValueEl = document.getElementById('iofValue');
-        const totalOriginationFeesEl = document.getElementById('totalOriginationFees');
-        const grossAmountEl = document.getElementById('grossAmountEl');
-        const summaryNetAmountEl = document.getElementById('summaryNetAmountEl');
-        const totalAllFeesValueEl = document.getElementById('totalAllFeesValue');
-
-        const tacPercentEl = document.getElementById('tacPercent');
-        const qqmPercentEl = document.getElementById('qqmPercent');
-        const iofPercentEl = document.getElementById('iofPercent');
-        const qqmEligibilityMessageEl = document.getElementById('qqmEligibilityMessage'); 
-
-        const totalInterestValueEl = document.getElementById('totalInterestValue');
-        const totalInflationValueEl = document.getElementById('totalInflationValue');
-        const totalAdminFeeValueEl = document.getElementById('totalAdminFeeValue');
-        const totalMaintenanceFeesEl = document.getElementById('totalMaintenanceFees');
-
-        const cetMonthlyEl = document.getElementById('cetMonthly'); 
-        const cetAnnualEl = document.getElementById('cetAnnual');   
-        const lenderTirMonthlyEl = document.getElementById('lenderTirMonthly');
-        const lenderTirAnnualEl = document.getElementById('lenderTirAnnual');
-
-        const amortizationTableBody = document.getElementById('amortizationTableBody');
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-
-        const mainContent = document.getElementById('main-content');
-        const ccbSection = document.getElementById('ccb-section');
-        const contractButton = document.getElementById('contractButton');
-        const backToSimulatorButton = document.getElementById('backToSimulatorButton');
-
-        let simulationData = {};
-
-        // --- FORMATTERS ---
-        const formatCurrency = (value) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        };
-
-        const formatPercent = (value, digits = 2) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
-        };
-
-        // --- CONSTANTS AND RATES ---
-        const qqmRates = [
-            [0.0006909, 0.002947, 0.004919, 0.008315, 0.013507, 0.028696],
-            [0.001630, 0.006978, 0.011681, 0.019614, 0.031662, null],
-            [0.002204, 0.009466, 0.015874, 0.026524, null, null],
-            [0.003176, 0.013719, 0.023043, null, null, null],
-            [0.004468, 0.019470, null, null, null, null],
-            [0.005797, null, null, null, null, null]
-        ];
-        const actualMonths = [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]; 
-        const tacRate = 0.005;
-        const iofRate = 0.0038;
-        
-        const monthlyRateFrom5PercentAnnual = Math.pow(1.05, 1/12) - 1;
-        const monthlyINPCRate = monthlyRateFrom5PercentAnnual;
-
-        let costsChart;
-
-        // --- CHART INITIALIZATION ---
-        function initializeChart() {
-            const ctx = document.getElementById('costsChart').getContext('2d');
-            costsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Juros', 'Correção Monetária', 'Taxa Admin.', 'TAC', 'QQM', 'IOF'],
-                    datasets: [{
-                        label: 'Encargos de Manutenção',
-                        data: [0, 0, 0],
-                        backgroundColor: ['#a7f3d0', '#fde68a', '#a5f3fc'],
-                        borderColor: '#f8f9fa',
-                        borderWidth: 2,
-                    }, {
-                        label: 'Encargos de Originação',
-                        data: [0, 0, 0],
-                        backgroundColor: ['#dbeafe', '#e9d5ff', '#c7d2fe'],
-                        borderColor: '#f8f9fa',
-                        borderWidth: 5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                           display: true,
-                           position: 'bottom',
-                           labels: {
-                               generateLabels: (chart) => {
-                                   const allItems = [];
-                                   chart.data.datasets.forEach((dataset, i) => {
-                                       const meta = chart.getDatasetMeta(i);
-                                       const offset = i === 0 ? 0 : 3;
-                                       dataset.data.forEach((_, index) => {
-                                           allItems.push({
-                                               text: chart.data.labels[index + offset],
-                                               fillStyle: dataset.backgroundColor[index],
-                                               strokeStyle: dataset.backgroundColor[index],
-                                               datasetIndex: i,
-                                               index: index,
-                                               hidden: meta.data[index].hidden
-                                           });
-                                       });
-                                   });
-                                   return allItems;
-                               }
-                           }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    if (tooltipItems.length > 0) {
-                                        return tooltipItems[0].dataset.label;
-                                    }
-                                    return '';
-                                },
-                                label: function(context) {
-                                    const offset = context.datasetIndex === 0 ? 0 : 3;
-                                    const individualLabel = context.chart.data.labels[context.dataIndex + offset];
-                                    const value = formatCurrency(context.parsed);
-                                    return `${individualLabel} (${value})`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- FINANCIAL CALCULATIONS ---
-        function calculateIRR(cashFlows, guess) {
-            const maxIterations = 1000;
-            const precision = 1e-7;
-            let irr = guess;
-            for (let i = 0; i < maxIterations; i++) {
-                let npv = 0;
-                let derivative = 0;
-                for (let j = 0; j < cashFlows.length; j++) {
-                    npv += cashFlows[j] / Math.pow(1 + irr, j);
-                    derivative -= j * cashFlows[j] / Math.pow(1 + irr, j + 1);
-                }
-                if (Math.abs(npv) < precision) return irr;
-                if (derivative === 0) return irr;
-                irr -= npv / derivative;
-            }
-            return irr;
-        }
-
-        function getQqmTermIndex(numMonths) {
-            if (numMonths <= 12) return 0;
-            if (numMonths <= 18) return 1;
-            if (numMonths <= 24) return 2;
-            if (numMonths <= 36) return 3;
-            if (numMonths <= 48) return 4;
-            if (numMonths <= 60) return 5;
-            return -1;
-        }
-
-        // --- MAIN SIMULATION LOGIC ---
-        function updateSimulation() {
-            const desiredNetAmount = parseFloat(netAmountInput.value);
-            const termIndex = parseInt(loanTermSelect.value);
-            const ageIndex = parseInt(ageRangeSelect.value);
-            const numMonths = actualMonths[termIndex];
-            const ageRangeText = ageRangeSelect.options[ageRangeSelect.selectedIndex].text;
-
-            const annualInterestPercent = parseFloat(interestRateInput.value) || 0;
-            const annualAdminPercent = parseFloat(adminRateInput.value) || 0;
-            
-            const monthlyInterestRate = Math.pow(1 + (annualInterestPercent / 100), 1/12) - 1;
-            const monthlyAdminRate = Math.pow(1 + (annualAdminPercent / 100), 1/12) - 1;
-
-            netAmountLabel.textContent = formatCurrency(desiredNetAmount);
-
-            const qqmTermArrayIndex = getQqmTermIndex(numMonths);
-            let currentQqmPercent = 0;
-            if (qqmTermArrayIndex !== -1 && qqmRates[qqmTermArrayIndex] && qqmRates[qqmTermArrayIndex][ageIndex] !== null) {
-                currentQqmPercent = qqmRates[qqmTermArrayIndex][ageIndex];
-                qqmEligibilityMessageEl.classList.add('hidden');
-            } else {
-                currentQqmPercent = 0;
-                qqmEligibilityMessageEl.classList.remove('hidden');
-            }
-            
-            const denominator = (1 - tacRate - iofRate) * (1 - currentQqmPercent);
-            const grossAmount = (denominator > 0) ? desiredNetAmount / denominator : 0;
-            
-            const tacValue = grossAmount * tacRate;
-            const iofValue = grossAmount * iofRate;
-            const baseAmountForQqm = grossAmount - tacValue - iofValue;
-            const qqmValue = baseAmountForQqm * currentQqmPercent;
-            const totalOriginationFees = tacValue + qqmValue + iofValue;
-            
-            grossAmountEl.textContent = formatCurrency(grossAmount);
-            summaryNetAmountEl.textContent = formatCurrency(desiredNetAmount);
-            tacValueEl.textContent = formatCurrency(tacValue); 
-            qqmValueEl.textContent = formatCurrency(qqmValue); 
-            iofValueEl.textContent = formatCurrency(iofValue); 
-            totalOriginationFeesEl.textContent = formatCurrency(totalOriginationFees); 
-
-            tacPercentEl.textContent = `(${formatPercent(tacRate)})`;
-            qqmPercentEl.textContent = `(${formatPercent(currentQqmPercent)})`;
-            iofPercentEl.textContent = `(${formatPercent(iofRate)})`;
-
-            amortizationTableBody.innerHTML = ''; 
-            
-            let currentSaldoDevedor = grossAmount;
-            const constantAmortization = (grossAmount > 0 && numMonths > 0) ? grossAmount / numMonths : 0; 
-            const borrowerCashFlows = [desiredNetAmount]; 
-            const lenderCashFlows = [-grossAmount];
-            
-            let totalJuros = 0, totalCorrecao = 0, totalAdmin = 0, totalPayable = 0, firstInstallmentValue = 0;
-
-            for (let i = 1; i <= numMonths; i++) {
-                if (currentSaldoDevedor <= 0.01 && i > 1) { 
-                    amortizationTableBody.innerHTML += `<tr><td>${i}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td><td>${formatCurrency(0)}</td></tr>`;
-                    borrowerCashFlows.push(0);
-                    lenderCashFlows.push(0);
-                    continue; 
-                }
-
-                let correcaoMes = currentSaldoDevedor * monthlyINPCRate;
-                let saldoDevedorCorrigido = currentSaldoDevedor + correcaoMes; 
-                let jurosMes = saldoDevedorCorrigido * monthlyInterestRate;
-                let adminMes = saldoDevedorCorrigido * monthlyAdminRate; 
-                let custoTotalMes = jurosMes + correcaoMes + adminMes;
-                let valorAmortizado = constantAmortization;
-                
-                if (i === numMonths && currentSaldoDevedor > 0) {
-                    valorAmortizado = currentSaldoDevedor;
-                    correcaoMes = currentSaldoDevedor * monthlyINPCRate;
-                    saldoDevedorCorrigido = currentSaldoDevedor + correcaoMes;
-                    jurosMes = saldoDevedorCorrigido * monthlyInterestRate;
-                    adminMes = saldoDevedorCorrigido * monthlyAdminRate;
-                    custoTotalMes = jurosMes + correcaoMes + adminMes;
-                }
-                
-                let valorParcela = valorAmortizado + custoTotalMes;
-                if (i === 1) {
-                    firstInstallmentValue = valorParcela;
-                }
-                currentSaldoDevedor -= valorAmortizado;
-                if (currentSaldoDevedor < 0.01) { currentSaldoDevedor = 0; }
-                
-                totalJuros += jurosMes;
-                totalCorrecao += correcaoMes;
-                totalAdmin += adminMes;
-                totalPayable += valorParcela;
-
-                amortizationTableBody.innerHTML += `<tr><td>${i}</td><td>${formatCurrency(valorParcela)}</td><td>${formatCurrency(correcaoMes)}</td><td>${formatCurrency(jurosMes)}</td><td>${formatCurrency(adminMes)}</td><td>${formatCurrency(valorAmortizado)}</td><td>${formatCurrency(currentSaldoDevedor)}</td></tr>`;
-
-                borrowerCashFlows.push(-valorParcela);
-                lenderCashFlows.push(valorParcela - adminMes);
-            }
-
-            const totalManutencao = totalJuros + totalCorrecao + totalAdmin;
-            const totalAllFees = totalOriginationFees + totalManutencao;
-            totalInterestValueEl.textContent = formatCurrency(totalJuros);
-            totalInflationValueEl.textContent = formatCurrency(totalCorrecao);
-            totalAdminFeeValueEl.textContent = formatCurrency(totalAdmin);
-            totalMaintenanceFeesEl.textContent = formatCurrency(totalManutencao);
-            totalAllFeesValueEl.textContent = formatCurrency(totalAllFees);
-            
-            updateChartData({ tac: tacValue, qqm: qqmValue, iof: iofValue, interest: totalJuros, inflation: totalCorrecao, admin: totalAdmin });
-
-            const monthlyCET = (numMonths > 0 && grossAmount > 0) ? calculateIRR(borrowerCashFlows, 0.005) : 0;
-            const annualCET = Math.pow(1 + monthlyCET, 12) - 1;
-            cetMonthlyEl.textContent = formatPercent(monthlyCET);
-            cetAnnualEl.textContent = formatPercent(annualCET);
-            
-            const monthlyLenderTIR = (numMonths > 0 && grossAmount > 0) ? calculateIRR(lenderCashFlows, 0.005) : 0;
-            const annualLenderTIR = Math.pow(1 + monthlyLenderTIR, 12) - 1;
-            lenderTirMonthlyEl.textContent = formatPercent(monthlyLenderTIR);
-            lenderTirAnnualEl.textContent = formatPercent(annualLenderTIR);
-
-            simulationData = {
-                grossAmount: formatCurrency(grossAmount),
-                netAmount: formatCurrency(desiredNetAmount),
-                loanTerm: `${numMonths} meses`,
-                ageRange: ageRangeText,
-                firstInstallment: formatCurrency(firstInstallmentValue),
-                cetAnnual: formatPercent(annualCET),
-                cetMonthly: formatPercent(monthlyCET),
-                totalPayable: formatCurrency(totalPayable),
-                rates: {
-                    interestAnnual: annualInterestPercent / 100,
-                    adminAnnual: annualAdminPercent / 100,
-                    monthlyInterest: monthlyInterestRate,
-                    monthlyAdmin: monthlyAdminRate,
-                    tac: tacRate,
-                    iof: iofRate,
-                    qqm: currentQqmPercent
-                },
-                raw: {
-                    grossAmount, tacValue, iofValue, qqmValue,
-                    totalJuros, totalCorrecao, totalAdmin, desiredNetAmount
-                }
-            };
-        }
-
-        // --- CCB GENERATION ---
-        function generateCCB() {
-            const { raw, rates } = simulationData;
-            const percentOfFinanced = (value) => raw.grossAmount > 0 ? formatPercent(value / raw.grossAmount, 2) : formatPercent(0, 2);
-
-            document.getElementById('ccbContractNumber').textContent = Date.now();
-            document.getElementById('ccbGrossAmount').textContent = simulationData.grossAmount;
-            document.getElementById('ccbNetAmount').textContent = simulationData.netAmount;
-            document.getElementById('ccbLoanTerm').textContent = simulationData.loanTerm;
-            document.getElementById('ccbFirstInstallment').textContent = simulationData.firstInstallment;
-            document.getElementById('ccbAge').textContent = simulationData.ageRange;
-            document.getElementById('ccbDate').textContent = new Date().toLocaleDateString('pt-BR');
-
-            // Populate Rates
-            document.getElementById('ccbInterestRate').textContent = `${formatPercent(rates.interestAnnual)} a.a. (${formatPercent(rates.monthlyInterest)} a.m.)`;
-            document.getElementById('ccbAdminRate').textContent = `${formatPercent(rates.adminAnnual)} a.a. (${formatPercent(rates.monthlyAdmin)} a.m.)`;
-            document.getElementById('ccbTacRate').textContent = formatPercent(rates.tac);
-            document.getElementById('ccbIofRate').textContent = formatPercent(rates.iof);
-            document.getElementById('ccbQqmRate').textContent = formatPercent(rates.qqm, 4);
-
-            // Populate CET Details
-            document.getElementById('cetDetailNetAmount').textContent = formatCurrency(raw.desiredNetAmount);
-            document.getElementById('cetDetailInterest').textContent = formatCurrency(raw.totalJuros);
-            document.getElementById('cetDetailInterestPercent').textContent = percentOfFinanced(raw.totalJuros);
-            document.getElementById('cetDetailInflation').textContent = formatCurrency(raw.totalCorrecao);
-            document.getElementById('cetDetailInflationPercent').textContent = percentOfFinanced(raw.totalCorrecao);
-            document.getElementById('cetDetailAdmin').textContent = formatCurrency(raw.totalAdmin);
-            document.getElementById('cetDetailAdminPercent').textContent = percentOfFinanced(raw.totalAdmin);
-            document.getElementById('cetDetailTac').textContent = formatCurrency(raw.tacValue);
-            document.getElementById('cetDetailTacPercent').textContent = percentOfFinanced(raw.tacValue);
-            document.getElementById('cetDetailIof').textContent = formatCurrency(raw.iofValue);
-            document.getElementById('cetDetailIofPercent').textContent = percentOfFinanced(raw.iofValue);
-            document.getElementById('cetDetailQqm').textContent = formatCurrency(raw.qqmValue);
-            document.getElementById('cetDetailQqmPercent').textContent = percentOfFinanced(raw.qqmValue);
-            document.getElementById('cetDetailTotalPayable').textContent = simulationData.totalPayable;
-            document.getElementById('cetDetailCetMonthly').textContent = `${simulationData.cetMonthly} a.m.`;
-            document.getElementById('cetDetailCetAnnual').textContent = `${simulationData.cetAnnual} a.a.`;
-
-            mainContent.classList.add('hidden');
-            ccbSection.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        // --- UI HELPERS ---
-        function updateChartData(costs) {
-            costsChart.data.datasets[0].data = [costs.interest, costs.inflation, costs.admin];
-            costsChart.data.datasets[1].data = [costs.tac, costs.qqm, costs.iof];
-            costsChart.update();
-        }
-        
-        function handleTabClick(event) {
-            const clickedTab = event.currentTarget;
-            const tabName = clickedTab.dataset.tab;
-            tabButtons.forEach(button => button.classList.remove('active'));
-            clickedTab.classList.add('active');
-            tabPanes.forEach(pane => {
-                pane.classList.toggle('hidden', pane.id !== `${tabName}-content`);
-            });
-        }
-
-        // --- EVENT LISTENERS ---
-        netAmountInput.addEventListener('input', updateSimulation);
-        loanTermSelect.addEventListener('change', updateSimulation);
-        ageRangeSelect.addEventListener('change', updateSimulation);
-        interestRateInput.addEventListener('input', updateSimulation);
-        adminRateInput.addEventListener('input', updateSimulation);
-        tabButtons.forEach(button => button.addEventListener('click', handleTabClick));
-        
-        contractButton.addEventListener('click', generateCCB);
-        backToSimulatorButton.addEventListener('click', () => {
-            ccbSection.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        });
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeChart();
-            loanTermSelect.value = "2";
-            updateSimulation();
-            tabButtons[0].click();
-        });
-
-    </script>
 </body>
 </html>
