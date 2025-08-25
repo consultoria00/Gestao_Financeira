@@ -94,6 +94,35 @@
         .total-row input[readonly] {
              background-color: #e9ecef;
         }
+        
+        /* --- Estilos para Adicionar/Remover Linhas --- */
+        .add-row-btn {
+            background: none;
+            border: 1px dashed #007bff;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .add-row-btn:hover { background-color: #eaf2f8; }
+        .delete-row-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+            line-height: 28px;
+            text-align: center;
+        }
+        .input-with-delete { display: flex; align-items: center; }
+
 
         /* --- Botão Gerar Excel --- */
         .generate-button {
@@ -113,100 +142,24 @@
         .generate-button:hover { background-color: #218838; }
         
         /* --- ESTILOS DO GRÁFICO E TABELA (Material 2) --- */
-        .analysis-container {
-            display: flex;
-            gap: 30px;
-            margin-top: 25px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-        .chart-container {
-            flex: 1;
-            min-width: 280px;
-            padding-right: 20px;
-            border-right: 1px solid #e0e5e9;
-        }
-        .chart {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            height: 250px;
-            padding: 10px;
-            border: 1px solid #e0e5e9;
-            border-radius: 5px;
-        }
-        .chart-bar-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100px;
-        }
-        .chart-bar {
-            width: 60px;
-            height: 100%; /* CORREÇÃO: Garante que a barra ocupe a altura do container */
-            background-color: #e9ecef;
-            border-radius: 5px 5px 0 0;
-            display: flex;
-            flex-direction: column-reverse; /* Empilha de baixo para cima */
-            overflow: hidden;
-        }
-        .chart-segment {
-            width: 100%;
-            transition: height 0.5s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8em;
-            font-weight: bold;
-            overflow: hidden;
-        }
-        .segment-essenciais { background-color: #007bff; } /* Azul */
-        .segment-estilo-vida { background-color: #ffc107; } /* Amarelo */
-        .segment-metas { background-color: #28a745; } /* Verde */
-        .chart-label {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 0.9em;
-            text-align: center;
-        }
-        .comparison-table-container {
-            flex: 1.5;
-            min-width: 300px;
-        }
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .comparison-table th, .comparison-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e0e5e9;
-        }
-        .comparison-table th {
-            background-color: #f8f9fa;
-        }
-        .comparison-table td:nth-child(2), .comparison-table td:nth-child(3) {
-            text-align: right;
-            font-weight: bold;
-        }
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-            font-size: 0.8em;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-        }
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            margin-right: 5px;
-            border-radius: 3px;
-        }
+        .analysis-container { display: flex; gap: 30px; margin-top: 25px; align-items: flex-end; flex-wrap: wrap; }
+        .chart-container { flex: 1; min-width: 280px; padding-right: 20px; border-right: 1px solid #e0e5e9; }
+        .chart { display: flex; justify-content: space-around; align-items: flex-end; height: 250px; padding: 10px; border: 1px solid #e0e5e9; border-radius: 5px; }
+        .chart-bar-group { display: flex; flex-direction: column; align-items: center; width: 100px; }
+        .chart-bar { width: 60px; height: 100%; background-color: #e9ecef; border-radius: 5px 5px 0 0; display: flex; flex-direction: column-reverse; overflow: hidden; }
+        .chart-segment { width: 100%; transition: height 0.5s ease-out; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8em; font-weight: bold; overflow: hidden; }
+        .segment-essenciais { background-color: #007bff; }
+        .segment-estilo-vida { background-color: #ffc107; }
+        .segment-metas { background-color: #28a745; }
+        .chart-label { margin-top: 10px; font-weight: bold; font-size: 0.9em; text-align: center; }
+        .comparison-table-container { flex: 1.5; min-width: 300px; }
+        .comparison-table { width: 100%; border-collapse: collapse; }
+        .comparison-table th, .comparison-table td { padding: 10px; text-align: left; border-bottom: 1px solid #e0e5e9; }
+        .comparison-table th { background-color: #f8f9fa; }
+        .comparison-table td:nth-child(2), .comparison-table td:nth-child(3) { text-align: right; font-weight: bold; }
+        .legend { display: flex; justify-content: center; gap: 20px; margin-top: 15px; font-size: 0.8em; }
+        .legend-item { display: flex; align-items: center; }
+        .legend-color { width: 12px; height: 12px; margin-right: 5px; border-radius: 3px; }
 
         /* --- Outros Estilos --- */
         .checklist{list-style:none;padding-left:0}.checklist h3{color:#004070;margin-top:25px;margin-bottom:10px}.checklist li{background-color:#f9f9f9;padding:15px;margin-bottom:8px;border-radius:5px;border-left:4px solid #005a9c;display:flex;align-items:center}.checklist li::before{content:'☐';font-size:1.5em;margin-right:15px;color:#005a9c}footer{text-align:center;padding:20px;font-size:.9em;color:#777}@media (max-width:768px){header h1{font-size:1.8em}.material-section h2{font-size:1.5em}.analysis-container{flex-direction:column;align-items:stretch}.chart-container{border-right:none;padding-right:0}}
@@ -217,7 +170,7 @@
     <div class="container">
         <header>
             <h1>Diagnóstico Financeiro Pessoal</h1>
-            <p>Sua Jornada para a Prosperidade Financeira</p>
+            <p>Sua Jornada para a Prosperidade Financeira - Coach Matheus</p>
         </header>
 
         <section class="material-section">
@@ -243,8 +196,9 @@
                 <tbody>
                     <tr class="category-header"><td colspan="3">2. Despesas Pessoais</td></tr>
                     
-                    <!-- REESTRUTURADO: Gastos Essenciais -->
                     <tr class="subcategory-header" style="background-color: #e6f0f7;"><td colspan="2">Gastos Essenciais</td><td><input type="text" id="subtotal-essenciais" readonly></td></tr>
+                </tbody>
+                <tbody id="essenciais-body">
                     <tr class="item-detail"><td>Moradia</td><td>Aluguel / Financiamento</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Moradia</td><td>Condomínio</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Contas</td><td>Luz, Água, Gás</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
@@ -252,20 +206,26 @@
                     <tr class="item-detail"><td>Saúde</td><td>Plano de Saúde</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Saúde</td><td>Terapia / Psicólogo</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Alimentação</td><td>Supermercado / Feira</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
-
-                    <!-- REESTRUTURADO: Estilo de Vida -->
+                </tbody>
+                <tbody>
+                    <tr><td colspan="3"><button type="button" class="add-row-btn" data-target-tbody="essenciais-body" data-group="essenciais">+ Adicionar item em Gastos Essenciais</button></td></tr>
                     <tr class="subcategory-header" style="background-color: #faf3e0;"><td colspan="2">Estilo de Vida</td><td><input type="text" id="subtotal-estilo-vida" readonly></td></tr>
+                </tbody>
+                <tbody id="estilo-vida-body">
                     <tr class="item-detail"><td>Alimentação</td><td>Restaurantes / Delivery</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Transporte</td><td>Combustível / Manutenção</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Transporte</td><td>Apps (Uber, 99) / Transporte Público</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
                     <tr class="item-detail"><td>Lazer</td><td>Academia, Hobbies, Compras</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
-
+                </tbody>
+                <tbody>
+                    <tr><td colspan="3"><button type="button" class="add-row-btn" data-target-tbody="estilo-vida-body" data-group="estilo-vida">+ Adicionar item em Estilo de Vida</button></td></tr>
                 </tbody>
 
                 <tbody>
                     <tr class="category-header"><td colspan="3">3. Resumo Financeiro</td></tr>
-                    <tr class="total-row" style="background-color: #f8d7da; color: #721c24;"><td></td><td><strong>TOTAL GERAL DE DESPESAS</strong></td><td><input type="text" id="total-despesas" readonly></td></tr>
-                    <tr class="total-row" style="background-color: #d4edda; color: #155724;"><td></td><td><strong>FLUXO DE CAIXA MENSAL (Metas)</strong></td><td><input type="text" id="fluxo-caixa" readonly></td></tr>
+                    <tr class="total-row" style="background-color: #e9ecef;"><td></td><td><strong>Total da Renda</strong></td><td><input type="text" id="resumo-total-renda" readonly></td></tr>
+                    <tr class="total-row" style="background-color: #f8d7da; color: #721c24;"><td></td><td><strong>Total de Despesas</strong></td><td><input type="text" id="total-despesas" readonly></td></tr>
+                    <tr class="total-row" style="background-color: #d4edda; color: #155724;"><td></td><td><strong>Disponível para investimento</strong></td><td><input type="text" id="fluxo-caixa" readonly></td></tr>
                 </tbody>
             </table>
             <button id="gerar-excel-btn" class="generate-button">Gerar Planilha Excel com Resumo</button>
@@ -354,15 +314,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const todosOsInputs = document.querySelectorAll('.calcula-valor');
+            const table = document.querySelector('.financial-table');
             const formatadorMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
             function atualizarTodosOsCalculos() {
-                let totais = {
-                    renda: 0,
-                    essenciais: 0,
-                    'estilo-vida': 0
-                };
+                let totais = { renda: 0, essenciais: 0, 'estilo-vida': 0 };
+                const todosOsInputs = table.querySelectorAll('.calcula-valor');
 
                 todosOsInputs.forEach(input => {
                     const valor = parseFloat(input.value) || 0;
@@ -377,14 +334,13 @@
                 const totalDespesas = totais.essenciais + totais['estilo-vida'];
                 const fluxoDeCaixa = totalRendas - totalDespesas;
 
-                // --- ATUALIZA OS CAMPOS READONLY NA TELA ---
                 document.getElementById('total-rendas').value = formatadorMoeda.format(totalRendas);
                 document.getElementById('subtotal-essenciais').value = formatadorMoeda.format(totais.essenciais);
                 document.getElementById('subtotal-estilo-vida').value = formatadorMoeda.format(totais['estilo-vida']);
+                document.getElementById('resumo-total-renda').value = formatadorMoeda.format(totalRendas);
                 document.getElementById('total-despesas').value = formatadorMoeda.format(totalDespesas);
                 document.getElementById('fluxo-caixa').value = formatadorMoeda.format(fluxoDeCaixa);
 
-                // --- ATUALIZA O GRÁFICO E A TABELA (MATERIAL 2) ---
                 const idealEssenciais = totalRendas * 0.5;
                 const idealEstiloVida = totalRendas * 0.3;
                 const idealMetas = totalRendas * 0.2;
@@ -412,35 +368,90 @@
                 segEstilo.style.height = `${Math.max(0, percEstiloVida)}%`;
                 segMetas.style.height = `${Math.max(0, percMetas)}%`;
 
-                // Adiciona o texto de porcentagem dentro dos segmentos
                 segEssenciais.innerText = percEssenciais > 10 ? `${Math.round(percEssenciais)}%` : '';
                 segEstilo.innerText = percEstiloVida > 10 ? `${Math.round(percEstiloVida)}%` : '';
                 segMetas.innerText = percMetas > 10 ? `${Math.round(percMetas)}%` : '';
             }
 
-            todosOsInputs.forEach(input => {
-                input.addEventListener('input', atualizarTodosOsCalculos);
+            // --- LÓGICA DE EVENTOS (Adicionar, Remover, Calcular) ---
+            table.addEventListener('click', function(event) {
+                // Botão de Adicionar Linha
+                if (event.target.classList.contains('add-row-btn')) {
+                    const targetTbodyId = event.target.dataset.targetTbody;
+                    const group = event.target.dataset.group;
+                    const targetTbody = document.getElementById(targetTbodyId);
+                    
+                    const newRow = document.createElement('tr');
+                    newRow.classList.add('item-detail');
+                    newRow.innerHTML = `
+                        <td><input type="text" placeholder="Novo item" class="item-name-input"></td>
+                        <td><input type="text" placeholder="Descrição (opcional)" class="subitem-name-input"></td>
+                        <td>
+                            <div class="input-with-delete">
+                                <input type="number" class="calcula-valor" data-group="${group}" placeholder="0.00">
+                                <button type="button" class="delete-row-btn" title="Remover linha">×</button>
+                            </div>
+                        </td>
+                    `;
+                    targetTbody.appendChild(newRow);
+                }
+
+                // Botão de Remover Linha
+                if (event.target.classList.contains('delete-row-btn')) {
+                    event.target.closest('tr').remove();
+                    atualizarTodosOsCalculos();
+                }
             });
 
-            document.getElementById('gerar-excel-btn').addEventListener('click', function() {
-                const table = document.querySelector('.financial-table');
-                let data = [];
-                for (const tbody of table.tBodies) {
-                    for (const row of tbody.rows) {
-                        const cols = row.cells;
-                        const categoria = cols[0].innerText;
-                        const item = cols[1].innerText;
-                        const input = cols[2].querySelector('input');
-                        const valor = input ? input.value : '';
-                        data.push([categoria, item, valor]);
-                    }
+            // Evento para recalcular ao digitar
+            table.addEventListener('input', function(event) {
+                if (event.target.classList.contains('calcula-valor')) {
+                    atualizarTodosOsCalculos();
                 }
+            });
+
+            // --- LÓGICA PARA GERAR EXCEL ---
+            document.getElementById('gerar-excel-btn').addEventListener('click', function() {
+                let data = [];
+                const tableRows = table.querySelectorAll('tbody > tr');
+
+                tableRows.forEach(row => {
+                    // Ignora as linhas que contêm os botões "+ Adicionar"
+                    if (row.querySelector('.add-row-btn')) {
+                        return;
+                    }
+
+                    const cols = row.cells;
+                    let col1 = '', col2 = '', col3 = '';
+
+                    // Processa a primeira coluna
+                    if (cols[0]) {
+                        const input = cols[0].querySelector('input');
+                        col1 = input ? input.value : cols[0].innerText;
+                    }
+                    
+                    // Processa a segunda coluna
+                    if (cols[1]) {
+                        const input = cols[1].querySelector('input');
+                        col2 = input ? input.value : cols[1].innerText;
+                    }
+
+                    // Processa a terceira coluna
+                    if (cols[2]) {
+                        const input = cols[2].querySelector('input');
+                        col3 = input ? input.value : '';
+                    }
+                    
+                    data.push([col1, col2, col3]);
+                });
+                
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(data);
                 XLSX.utils.book_append_sheet(wb, ws, "Diagnostico Financeiro");
                 XLSX.writeFile(wb, "Diagnostico_Financeiro_Pessoal.xlsx");
             });
 
+            // Roda os cálculos uma vez no início para formatar os campos zerados
             atualizarTodosOsCalculos();
         });
     </script>
