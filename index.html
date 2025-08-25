@@ -53,7 +53,7 @@
         }
         .material-section p { font-size: 1em; color: #555; }
 
-        /* --- Estilos da Tabela (Material 1) --- */
+        /* --- Estilos da Tabela (Passo 1) --- */
         .financial-table {
             width: 100%;
             border-collapse: collapse;
@@ -141,7 +141,7 @@
         }
         .generate-button:hover { background-color: #218838; }
         
-        /* --- ESTILOS DO GRÁFICO E TABELA (Material 2) --- */
+        /* --- ESTILOS DO GRÁFICO E TABELA (Passo 2) --- */
         .analysis-container { display: flex; gap: 30px; margin-top: 25px; align-items: flex-end; flex-wrap: wrap; }
         .chart-container { flex: 1; min-width: 280px; padding-right: 20px; border-right: 1px solid #e0e5e9; }
         .chart { display: flex; justify-content: space-around; align-items: flex-end; height: 250px; padding: 10px; border: 1px solid #e0e5e9; border-radius: 5px; }
@@ -170,11 +170,11 @@
     <div class="container">
         <header>
             <h1>Diagnóstico Financeiro Pessoal</h1>
-            <p>Sua Jornada para a Prosperidade Financeira - Coach Matheus</p>
+            <p>Sua Jornada para a Prosperidade Financeira com o Coach Matheus</p>
         </header>
 
         <section class="material-section">
-            <h2>Material 1: Diagnóstico Financeiro Completo</h2>
+            <h2>Passo 1: Diagnóstico Financeiro Completo</h2>
             <p>Preencha os campos em branco. Os totais e subtotais serão calculados automaticamente. Use a média dos últimos 3 meses para valores variáveis.</p>
             <table class="financial-table">
                 <thead>
@@ -187,9 +187,14 @@
                 
                 <tbody>
                     <tr class="category-header"><td colspan="3">1. Rendas Líquidas</td></tr>
-                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 1)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-salario-1" placeholder="0.00"></td></tr>
-                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 2)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-salario-2" placeholder="0.00"></td></tr>
-                    <tr class="item-detail"><td>Renda PJ</td><td>Pró-Labore (se houver)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-prolabore" placeholder="0.00"></td></tr>
+                </tbody>
+                <tbody id="rendas-body">
+                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 1)</td><td><input type="number" class="calcula-valor" data-category="renda" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 2)</td><td><input type="number" class="calcula-valor" data-category="renda" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Renda PJ</td><td>Pró-Labore (se houver)</td><td><input type="number" class="calcula-valor" data-category="renda" placeholder="0.00"></td></tr>
+                </tbody>
+                <tbody>
+                    <tr><td colspan="3"><button type="button" class="add-row-btn" data-target-tbody="rendas-body" data-category="renda">+ Adicionar fonte de renda</button></td></tr>
                     <tr class="total-row"><td></td><td><strong>TOTAL DE RENDAS</strong></td><td><input type="text" id="total-rendas" readonly></td></tr>
                 </tbody>
 
@@ -232,8 +237,9 @@
         </section>
 
         <section class="material-section">
-            <h2>Material 2: Análise do Orçamento 50/30/20</h2>
-            <p>Veja uma comparação visual de como suas despesas atuais se alinham ao modelo de orçamento 50/30/20, com base na sua renda total.</p>
+            <h2>Passo 2: Análise do Orçamento 50/30/20</h2>
+            <p><strong>O que é a metodologia 50/30/20?</strong> É uma regra simples de orçamento que divide a sua renda líquida em três categorias: <strong>50%</strong> para gastos essenciais (moradia, contas, supermercado), <strong>30%</strong> para estilo de vida (lazer, restaurantes, hobbies) e <strong>20%</strong> para as suas metas financeiras (investimentos, poupança, quitação de dívidas).</p>
+            <p>Veja abaixo uma comparação visual de como suas despesas atuais se alinham a este modelo, com base na sua renda total.</p>
             
             <div class="analysis-container">
                 <div class="chart-container">
@@ -293,7 +299,7 @@
         </section>
 
         <section class="material-section">
-            <h2>Material 3: Checklist para Organização</h2>
+            <h2>Passo 3: Checklist para Organização</h2>
             <p>Siga estas dicas para manter suas finanças sempre em ordem.</p>
             <ul class="checklist">
                 <h3>Ações Imediatas</h3>
@@ -375,20 +381,24 @@
 
             // --- LÓGICA DE EVENTOS (Adicionar, Remover, Calcular) ---
             table.addEventListener('click', function(event) {
-                // Botão de Adicionar Linha
                 if (event.target.classList.contains('add-row-btn')) {
                     const targetTbodyId = event.target.dataset.targetTbody;
                     const group = event.target.dataset.group;
+                    const category = event.target.dataset.category;
                     const targetTbody = document.getElementById(targetTbodyId);
                     
                     const newRow = document.createElement('tr');
                     newRow.classList.add('item-detail');
+
+                    const dataAttribute = group ? `data-group="${group}"` : `data-category="${category}"`;
+                    const placeholderItem = category === 'renda' ? 'Fonte de Renda' : 'Novo item';
+                    
                     newRow.innerHTML = `
-                        <td><input type="text" placeholder="Novo item" class="item-name-input"></td>
-                        <td><input type="text" placeholder="Descrição (opcional)" class="subitem-name-input"></td>
+                        <td><input type="text" placeholder="${placeholderItem}" class="item-name-input"></td>
+                        <td><input type="text" placeholder="Descrição" class="subitem-name-input"></td>
                         <td>
                             <div class="input-with-delete">
-                                <input type="number" class="calcula-valor" data-group="${group}" placeholder="0.00">
+                                <input type="number" class="calcula-valor" ${dataAttribute} placeholder="0.00">
                                 <button type="button" class="delete-row-btn" title="Remover linha">×</button>
                             </div>
                         </td>
@@ -396,14 +406,12 @@
                     targetTbody.appendChild(newRow);
                 }
 
-                // Botão de Remover Linha
                 if (event.target.classList.contains('delete-row-btn')) {
                     event.target.closest('tr').remove();
                     atualizarTodosOsCalculos();
                 }
             });
 
-            // Evento para recalcular ao digitar
             table.addEventListener('input', function(event) {
                 if (event.target.classList.contains('calcula-valor')) {
                     atualizarTodosOsCalculos();
@@ -416,27 +424,19 @@
                 const tableRows = table.querySelectorAll('tbody > tr');
 
                 tableRows.forEach(row => {
-                    // Ignora as linhas que contêm os botões "+ Adicionar"
-                    if (row.querySelector('.add-row-btn')) {
-                        return;
-                    }
+                    if (row.querySelector('.add-row-btn')) return;
 
                     const cols = row.cells;
                     let col1 = '', col2 = '', col3 = '';
 
-                    // Processa a primeira coluna
                     if (cols[0]) {
                         const input = cols[0].querySelector('input');
                         col1 = input ? input.value : cols[0].innerText;
                     }
-                    
-                    // Processa a segunda coluna
                     if (cols[1]) {
                         const input = cols[1].querySelector('input');
                         col2 = input ? input.value : cols[1].innerText;
                     }
-
-                    // Processa a terceira coluna
                     if (cols[2]) {
                         const input = cols[2].querySelector('input');
                         col3 = input ? input.value : '';
@@ -451,7 +451,6 @@
                 XLSX.writeFile(wb, "Diagnostico_Financeiro_Pessoal.xlsx");
             });
 
-            // Roda os cálculos uma vez no início para formatar os campos zerados
             atualizarTodosOsCalculos();
         });
     </script>
