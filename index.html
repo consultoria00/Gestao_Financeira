@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Materiais de Apoio - Assessoria Financeira</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         /* --- Estilos Gerais --- */
         body {
@@ -85,92 +86,51 @@
             font-weight: bold;
             color: #005a9c;
         }
-        .financial-table .total-row td {
-            font-weight: bold;
-            background-color: #f0f4f7;
-        }
-        .financial-table strong {
-            color: #004070;
+        
+        /* Estilo para os campos de input */
+        .financial-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que padding não afete a largura total */
+            font-size: 1em;
         }
 
-        /* --- Estilos do Orçamento (Material 2) --- */
-        .budget-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            margin-top: 25px;
-        }
-        .budget-card {
-            flex: 1;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #e0e5e9;
-            text-align: center;
-        }
-        .budget-card h3 {
-            margin-top: 0;
-            font-size: 2.5em;
-            color: #005a9c;
-        }
-        .budget-card h4 {
-            font-size: 1.2em;
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-        .budget-card ul {
-            list-style-type: none;
-            padding: 0;
-            color: #555;
-            font-size: 0.9em;
-        }
-        
-        /* --- Estilos do Checklist (Material 3) --- */
-        .checklist {
-            list-style: none;
-            padding-left: 0;
-        }
-        .checklist h3 {
-            color: #004070;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-        .checklist li {
-            background-color: #f9f9f9;
+        /* --- Botão Gerar Excel --- */
+        .generate-button {
+            display: block;
+            width: 100%;
             padding: 15px;
-            margin-bottom: 8px;
+            margin-top: 20px;
+            background-color: #28a745; /* Verde sucesso */
+            color: white;
+            border: none;
             border-radius: 5px;
-            border-left: 4px solid #005a9c;
-            display: flex;
-            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        .checklist li::before {
-            content: '☐';
+        .generate-button:hover {
+            background-color: #218838;
+        }
+        
+        /* --- Estilos do Orçamento (Material 2) --- */
+        .budget-container{display:flex;justify-content:space-between;gap:20px;margin-top:25px}
+        .budget-card{flex:1;background-color:#f9f9f9;border-radius:8px;padding:20px;border:1px solid #e0e5e9;text-align:center}
+        .budget-card h3{margin-top:0;font-size:2.5em;color:#005a9c}
+        .budget-card h4{font-size:1.2em;margin:0 0 10px 0;color:#333}
+        /* NOVO ESTILO: para o valor calculado em R$ */
+        .budget-card .budget-value {
             font-size: 1.5em;
-            margin-right: 15px;
-            color: #005a9c;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
         }
+        .budget-card ul{list-style-type:none;padding:0;color:#555;font-size:.9em}
         
-        /* --- Rodapé --- */
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9em;
-            color: #777;
-        }
-        
-        /* --- Responsividade --- */
-        @media (max-width: 768px) {
-            .budget-container {
-                flex-direction: column;
-            }
-            header h1 {
-                font-size: 1.8em;
-            }
-            .material-section h2 {
-                font-size: 1.5em;
-            }
-        }
+        .checklist{list-style:none;padding-left:0}.checklist h3{color:#004070;margin-top:25px;margin-bottom:10px}.checklist li{background-color:#f9f9f9;padding:15px;margin-bottom:8px;border-radius:5px;border-left:4px solid #005a9c;display:flex;align-items:center}.checklist li::before{content:'☐';font-size:1.5em;margin-right:15px;color:#005a9c}footer{text-align:center;padding:20px;font-size:.9em;color:#777}@media (max-width:768px){.budget-container{flex-direction:column}header h1{font-size:1.8em}.material-section h2{font-size:1.5em}}
     </style>
 </head>
 <body>
@@ -183,7 +143,7 @@
 
         <section class="material-section">
             <h2>Material 1: Diagnóstico Financeiro Completo</h2>
-            <p>Este é o nosso ponto de partida. Use esta estrutura para preencher com seus dados e criarmos juntos um panorama claro da sua vida financeira atual. Use a média dos últimos 3 meses para valores variáveis.</p>
+            <p>Este é o nosso ponto de partida. Preencha os campos abaixo para criarmos juntos um panorama claro da sua vida financeira atual. Use a média dos últimos 3 meses para valores variáveis.</p>
             <table class="financial-table">
                 <thead>
                     <tr>
@@ -194,35 +154,29 @@
                 </thead>
                 <tbody>
                     <tr class="category-header"><td colspan="3">1. Rendas Líquidas</td></tr>
-                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 1)</td><td></td></tr>
-                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 2)</td><td></td></tr>
-                    <tr><td>Renda</td><td>Pró-Labore (Consultório PJ)</td><td></td></tr>
-                    <tr class="total-row"><td><strong>TOTAL DE RENDAS</strong></td><td></td><td></td></tr>
+                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 1)</td><td><input type="number" id="renda-salario-1" class="campo-renda" placeholder="0.00"></td></tr>
+                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 2)</td><td><input type="number" id="renda-salario-2" class="campo-renda" placeholder="0.00"></td></tr>
+                    <tr><td>Renda</td><td>Pró-Labore (Consultório PJ)</td><td><input type="number" id="renda-prolabore" class="campo-renda" placeholder="0.00"></td></tr>
 
                     <tr class="category-header"><td colspan="3">2. Despesas Fixas (Pessoa Física)</td></tr>
-                    <tr><td>Moradia</td><td>Aluguel / Financiamento</td><td></td></tr>
-                    <tr><td>Contas</td><td>Luz, Água, Gás, Internet</td><td></td></tr>
-                    <tr><td>Saúde</td><td>Planos de Saúde</td><td></td></tr>
-                    <tr><td>Educação</td><td>Mensalidades</td><td></td></tr>
-                    <tr class="total-row"><td><strong>SUBTOTAL FIXAS</strong></td><td></td><td></td></tr>
+                    <tr><td>Moradia</td><td>Aluguel / Financiamento</td><td><input type="number" id="despesa-aluguel" placeholder="0.00"></td></tr>
+                    <tr><td>Contas</td><td>Luz, Água, Gás, Internet</td><td><input type="number" id="despesa-contas" placeholder="0.00"></td></tr>
+                    <tr><td>Saúde</td><td>Planos de Saúde</td><td><input type="number" id="despesa-saude" placeholder="0.00"></td></tr>
+                    <tr><td>Educação</td><td>Mensalidades</td><td><input type="number" id="despesa-educacao" placeholder="0.00"></td></tr>
 
                     <tr class="category-header"><td colspan="3">3. Despesas Variáveis (Pessoa Física)</td></tr>
-                    <tr><td>Alimentação</td><td>Supermercado / Feira</td><td></td></tr>
-                    <tr><td>Transporte</td><td>Combustível, Apps</td><td></td></tr>
-                    <tr><td>Lazer</td><td>Restaurantes, Viagens</td><td></td></tr>
-                    <tr><td>Cuidados</td><td>Academia, Salão</td><td></td></tr>
-                    <tr class="total-row"><td><strong>SUBTOTAL VARIÁVEIS</strong></td><td></td><td></td></tr>
+                    <tr><td>Alimentação</td><td>Supermercado / Feira</td><td><input type="number" id="despesa-alimentacao" placeholder="0.00"></td></tr>
+                    <tr><td>Transporte</td><td>Combustível, Apps</td><td><input type="number" id="despesa-transporte" placeholder="0.00"></td></tr>
+                    <tr><td>Lazer</td><td>Restaurantes, Viagens</td><td><input type="number" id="despesa-lazer" placeholder="0.00"></td></tr>
+                    <tr><td>Cuidados</td><td>Academia, Salão</td><td><input type="number" id="despesa-cuidados" placeholder="0.00"></td></tr>
                     
                     <tr class="category-header"><td colspan="3">4. Despesas do Consultório (Pessoa Jurídica)</td></tr>
-                    <tr><td>Estrutura</td><td>Aluguel da Sala / Condomínio</td><td></td></tr>
-                    <tr><td>Operação</td><td>Salários, Impostos (DAS)</td><td></td></tr>
-                    <tr><td>Administrativo</td><td>Contabilidade, Softwares</td><td></td></tr>
-                    <tr class="total-row"><td><strong>SUBTOTAL PJ</strong></td><td></td><td></td></tr>
-
-                    <tr class="category-header"><td colspan="3">5. Resumo Financeiro</td></tr>
-                    <tr class="total-row"><td colspan="2"><strong>FLUXO DE CAIXA MENSAL (Rendas - Total Despesas)</strong></td><td></td></tr>
+                    <tr><td>Estrutura</td><td>Aluguel da Sala / Condomínio</td><td><input type="number" id="despesa-pj-estrutura" placeholder="0.00"></td></tr>
+                    <tr><td>Operação</td><td>Salários, Impostos (DAS)</td><td><input type="number" id="despesa-pj-operacao" placeholder="0.00"></td></tr>
+                    <tr><td>Administrativo</td><td>Contabilidade, Softwares</td><td><input type="number" id="despesa-pj-admin" placeholder="0.00"></td></tr>
                 </tbody>
             </table>
+            <button id="gerar-excel-btn" class="generate-button">Gerar Planilha Excel</button>
         </section>
 
         <section class="material-section">
@@ -232,6 +186,7 @@
                 <div class="budget-card">
                     <h3>50%</h3>
                     <h4>Gastos Essenciais</h4>
+                    <p class="budget-value" id="valor-essenciais">R$ 0,00</p>
                     <ul>
                         <li>Moradia</li>
                         <li>Contas de Consumo</li>
@@ -242,7 +197,8 @@
                 <div class="budget-card">
                     <h3>30%</h3>
                     <h4>Estilo de Vida</h4>
-                     <ul>
+                    <p class="budget-value" id="valor-estilo-vida">R$ 0,00</p>
+                    <ul>
                         <li>Lazer e Restaurantes</li>
                         <li>Viagens e Hobbies</li>
                         <li>Compras</li>
@@ -252,7 +208,8 @@
                 <div class="budget-card">
                     <h3>20%</h3>
                     <h4>Metas Financeiras</h4>
-                     <ul>
+                    <p class="budget-value" id="valor-metas">R$ 0,00</p>
+                    <ul>
                         <li>Reserva de Emergência</li>
                         <li>Investimentos</li>
                         <li>Quitação de Dívidas</li>
@@ -264,27 +221,91 @@
 
         <section class="material-section">
             <h2>Material 3: Checklist para Separação PF x PJ</h2>
-            <p>Esta é a regra de ouro para o seu sucesso financeiro. Siga este checklist para garantir que as finanças do consultório e as suas finanças pessoais nunca mais se misturem.</p>
-            <ul class="checklist">
-                <h3>Ações Imediatas</h3>
-                <li>Abrir uma Conta Bancária exclusiva para a PJ.</li>
-                <li>Solicitar um Cartão de Crédito exclusivo para a PJ.</li>
-                <li>Definir um valor fixo de Pró-Labore (seu salário da PJ).</li>
-                <li>Agendar a transferência automática mensal do Pró-Labore (PJ para PF).</li>
-                
-                <h3>Monitoramento Contínuo</h3>
-                <li>NUNCA pagar uma conta pessoal com recursos da PJ.</li>
-                <li>NUNCA pagar uma despesa do consultório com recursos da PF.</li>
-                <li>Revisar mensalmente as faturas dos dois cartões.</li>
-                <li>Guardar todos os comprovantes e recibos da PJ.</li>
-            </ul>
+             <p>Esta é a regra de ouro para o seu sucesso financeiro. Siga este checklist para garantir que as finanças do consultório e as suas finanças pessoais nunca mais se misturem.</p><ul class="checklist"><h3>Ações Imediatas</h3><li>Abrir uma Conta Bancária exclusiva para a PJ.</li><li>Solicitar um Cartão de Crédito exclusivo para a PJ.</li><li>Definir um valor fixo de Pró-Labore (seu salário da PJ).</li><li>Agendar a transferência automática mensal do Pró-Labore (PJ para PF).</li><h3>Monitoramento Contínuo</h3><li>NUNCA pagar uma conta pessoal com recursos da PJ.</li><li>NUNCA pagar uma despesa do consultório com recursos da PF.</li><li>Revisar mensalmente as faturas dos dois cartões.</li><li>Guardar todos os comprovantes e recibos da PJ.</li></ul>
         </section>
 
         <footer>
             <p>Este material é o primeiro passo da nossa jornada. Estou à disposição para esclarecer qualquer dúvida.</p>
         </footer>
-
     </div>
+
+    <script>
+        // --- LÓGICA 1: CÁLCULO EM TEMPO REAL DO ORÇAMENTO 50/30/20 ---
+
+        // Pega os elementos do HTML que vamos usar (campos de renda e locais para exibir os resultados)
+        const camposRenda = document.querySelectorAll('.campo-renda');
+        const displayEssenciais = document.getElementById('valor-essenciais');
+        const displayEstiloVida = document.getElementById('valor-estilo-vida');
+        const displayMetas = document.getElementById('valor-metas');
+
+        // Cria um formatador para mostrar os números como dinheiro (R$)
+        const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        // Função que faz toda a mágica de calcular e atualizar
+        function calcularOrcamento() {
+            let totalRendas = 0;
+            // Soma o valor de cada campo de renda
+            camposRenda.forEach(campo => {
+                totalRendas += parseFloat(campo.value) || 0;
+            });
+
+            // Calcula as porcentagens
+            const valor50 = totalRendas * 0.5;
+            const valor30 = totalRendas * 0.3;
+            const valor20 = totalRendas * 0.2;
+
+            // Atualiza os valores na tela, já formatados
+            displayEssenciais.innerText = formatadorMoeda.format(valor50);
+            displayEstiloVida.innerText = formatadorMoeda.format(valor30);
+            displayMetas.innerText = formatadorMoeda.format(valor20);
+        }
+
+        // Adiciona um "ouvinte" para cada campo de renda.
+        // A função calcularOrcamento será chamada toda vez que o usuário digitar algo.
+        camposRenda.forEach(campo => {
+            campo.addEventListener('input', calcularOrcamento);
+        });
+
+
+        // --- LÓGICA 2: GERAR A PLANILHA EXCEL ---
+
+        // Adiciona um "ouvinte" ao botão. A função dentro dele só será executada quando o botão for clicado.
+        document.getElementById('gerar-excel-btn').addEventListener('click', function() {
+            
+            // 1. Coleta dos dados: Pega o valor de cada campo de input pelo seu 'id'.
+            const data = [
+                ["Categoria", "Item", "Valor Mensal (R$)"],
+                ["Renda", "Salário Líquido (Emprego CLT 1)", parseFloat(document.getElementById('renda-salario-1').value) || 0],
+                ["Renda", "Salário Líquido (Emprego CLT 2)", parseFloat(document.getElementById('renda-salario-2').value) || 0],
+                ["Renda", "Pró-Labore (Consultório PJ)", parseFloat(document.getElementById('renda-prolabore').value) || 0],
+                [],
+                ["Despesa Fixa PF", "Aluguel / Financiamento", parseFloat(document.getElementById('despesa-aluguel').value) || 0],
+                ["Despesa Fixa PF", "Luz, Água, Gás, Internet", parseFloat(document.getElementById('despesa-contas').value) || 0],
+                ["Despesa Fixa PF", "Planos de Saúde", parseFloat(document.getElementById('despesa-saude').value) || 0],
+                ["Despesa Fixa PF", "Mensalidades", parseFloat(document.getElementById('despesa-educacao').value) || 0],
+                [],
+                ["Despesa Variável PF", "Supermercado / Feira", parseFloat(document.getElementById('despesa-alimentacao').value) || 0],
+                ["Despesa Variável PF", "Combustível, Apps", parseFloat(document.getElementById('despesa-transporte').value) || 0],
+                ["Despesa Variável PF", "Restaurantes, Viagens", parseFloat(document.getElementById('despesa-lazer').value) || 0],
+                ["Despesa Variável PF", "Academia, Salão", parseFloat(document.getElementById('despesa-cuidados').value) || 0],
+                [],
+                ["Despesa PJ", "Aluguel da Sala / Condomínio", parseFloat(document.getElementById('despesa-pj-estrutura').value) || 0],
+                ["Despesa PJ", "Salários, Impostos (DAS)", parseFloat(document.getElementById('despesa-pj-operacao').value) || 0],
+                ["Despesa PJ", "Contabilidade, Softwares", parseFloat(document.getElementById('despesa-pj-admin').value) || 0]
+            ];
+
+            // 2. Criação da Planilha
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Diagnostico");
+
+            // 3. Download do Arquivo
+            XLSX.writeFile(wb, "Diagnostico_Financeiro.xlsx");
+        });
+    </script>
 
 </body>
 </html>
