@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materiais de Apoio - Assessoria Financeira</title>
+    <title>Diagnóstico Financeiro Pessoal - Assessoria Financeira</title>
+    <!-- Incluindo a biblioteca SheetJS para gerar o Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         /* --- Estilos Gerais --- */
@@ -28,30 +29,20 @@
 
         /* --- Cabeçalho --- */
         header {
-            background-color: #005a9c; /* Azul corporativo */
+            background-color: #005a9c;
             color: #ffffff;
             padding: 30px;
             text-align: center;
         }
-        header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            font-weight: 600;
-        }
-        header p {
-            margin: 5px 0 0;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
+        header h1 { margin: 0; font-size: 2.2em; font-weight: 600; }
+        header p { margin: 5px 0 0; font-size: 1.1em; opacity: 0.9; }
 
         /* --- Seções de Conteúdo --- */
         .material-section {
             padding: 30px;
             border-bottom: 1px solid #e0e5e9;
         }
-        .material-section:last-child {
-            border-bottom: none;
-        }
+        .material-section:last-child { border-bottom: none; }
         .material-section h2 {
             font-size: 1.8em;
             color: #004070;
@@ -60,10 +51,7 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        .material-section p {
-            font-size: 1em;
-            color: #555;
-        }
+        .material-section p { font-size: 1em; color: #555; }
 
         /* --- Estilos da Tabela (Material 1) --- */
         .financial-table {
@@ -81,20 +69,30 @@
             font-weight: 600;
             color: #333;
         }
-        .financial-table .category-header td {
-            background-color: #fafcfe;
-            font-weight: bold;
-            color: #005a9c;
-        }
         
-        /* Estilo para os campos de input */
+        .category-header td { background-color: #eaf2f8; font-weight: bold; color: #005a9c; }
+        .subcategory-header td { background-color: #f8f9fa; font-weight: bold; }
+        .item-detail td:first-child { padding-left: 30px; }
+        .total-row td { background-color: #e9ecef; font-weight: bold; font-size: 1.05em; }
+
         .financial-table input {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box; /* Garante que padding não afete a largura total */
+            box-sizing: border-box;
             font-size: 1em;
+            text-align: right;
+            background-color: #fff;
+        }
+        .financial-table input[readonly] {
+            border: none;
+            font-weight: bold;
+            color: #333;
+            background-color: transparent;
+        }
+        .total-row input[readonly] {
+             background-color: #e9ecef;
         }
 
         /* --- Botão Gerar Excel --- */
@@ -103,7 +101,7 @@
             width: 100%;
             padding: 15px;
             margin-top: 20px;
-            background-color: #28a745; /* Verde sucesso */
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 5px;
@@ -112,116 +110,241 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .generate-button:hover {
-            background-color: #218838;
-        }
+        .generate-button:hover { background-color: #218838; }
         
-        /* --- Estilos do Orçamento (Material 2) --- */
-        .budget-container{display:flex;justify-content:space-between;gap:20px;margin-top:25px}
-        .budget-card{flex:1;background-color:#f9f9f9;border-radius:8px;padding:20px;border:1px solid #e0e5e9;text-align:center}
-        .budget-card h3{margin-top:0;font-size:2.5em;color:#005a9c}
-        .budget-card h4{font-size:1.2em;margin:0 0 10px 0;color:#333}
-        /* NOVO ESTILO: para o valor calculado em R$ */
-        .budget-card .budget-value {
-            font-size: 1.5em;
+        /* --- ESTILOS DO GRÁFICO E TABELA (Material 2) --- */
+        .analysis-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 25px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 280px;
+            padding-right: 20px;
+            border-right: 1px solid #e0e5e9;
+        }
+        .chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 250px;
+            padding: 10px;
+            border: 1px solid #e0e5e9;
+            border-radius: 5px;
+        }
+        .chart-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+        }
+        .chart-bar {
+            width: 60px;
+            height: 100%; /* CORREÇÃO: Garante que a barra ocupe a altura do container */
+            background-color: #e9ecef;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            flex-direction: column-reverse; /* Empilha de baixo para cima */
+            overflow: hidden;
+        }
+        .chart-segment {
+            width: 100%;
+            transition: height 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
             font-weight: bold;
-            color: #333;
-            margin: 10px 0;
+            overflow: hidden;
         }
-        .budget-card ul{list-style-type:none;padding:0;color:#555;font-size:.9em}
-        
-        .checklist{list-style:none;padding-left:0}.checklist h3{color:#004070;margin-top:25px;margin-bottom:10px}.checklist li{background-color:#f9f9f9;padding:15px;margin-bottom:8px;border-radius:5px;border-left:4px solid #005a9c;display:flex;align-items:center}.checklist li::before{content:'☐';font-size:1.5em;margin-right:15px;color:#005a9c}footer{text-align:center;padding:20px;font-size:.9em;color:#777}@media (max-width:768px){.budget-container{flex-direction:column}header h1{font-size:1.8em}.material-section h2{font-size:1.5em}}
+        .segment-essenciais { background-color: #007bff; } /* Azul */
+        .segment-estilo-vida { background-color: #ffc107; } /* Amarelo */
+        .segment-metas { background-color: #28a745; } /* Verde */
+        .chart-label {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        .comparison-table-container {
+            flex: 1.5;
+            min-width: 300px;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e5e9;
+        }
+        .comparison-table th {
+            background-color: #f8f9fa;
+        }
+        .comparison-table td:nth-child(2), .comparison-table td:nth-child(3) {
+            text-align: right;
+            font-weight: bold;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.8em;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+
+        /* --- Outros Estilos --- */
+        .checklist{list-style:none;padding-left:0}.checklist h3{color:#004070;margin-top:25px;margin-bottom:10px}.checklist li{background-color:#f9f9f9;padding:15px;margin-bottom:8px;border-radius:5px;border-left:4px solid #005a9c;display:flex;align-items:center}.checklist li::before{content:'☐';font-size:1.5em;margin-right:15px;color:#005a9c}footer{text-align:center;padding:20px;font-size:.9em;color:#777}@media (max-width:768px){header h1{font-size:1.8em}.material-section h2{font-size:1.5em}.analysis-container{flex-direction:column;align-items:stretch}.chart-container{border-right:none;padding-right:0}}
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>Materiais de Apoio</h1>
+            <h1>Diagnóstico Financeiro Pessoal</h1>
             <p>Sua Jornada para a Prosperidade Financeira</p>
         </header>
 
         <section class="material-section">
             <h2>Material 1: Diagnóstico Financeiro Completo</h2>
-            <p>Este é o nosso ponto de partida. Preencha os campos abaixo para criarmos juntos um panorama claro da sua vida financeira atual. Use a média dos últimos 3 meses para valores variáveis.</p>
+            <p>Preencha os campos em branco. Os totais e subtotais serão calculados automaticamente. Use a média dos últimos 3 meses para valores variáveis.</p>
             <table class="financial-table">
                 <thead>
                     <tr>
-                        <th>Categoria</th>
                         <th>Item</th>
+                        <th>Subitem</th>
                         <th>Valor Mensal (R$)</th>
                     </tr>
                 </thead>
+                
                 <tbody>
                     <tr class="category-header"><td colspan="3">1. Rendas Líquidas</td></tr>
-                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 1)</td><td><input type="number" id="renda-salario-1" class="campo-renda" placeholder="0.00"></td></tr>
-                    <tr><td>Renda</td><td>Salário Líquido (Emprego CLT 2)</td><td><input type="number" id="renda-salario-2" class="campo-renda" placeholder="0.00"></td></tr>
-                    <tr><td>Renda</td><td>Pró-Labore (Consultório PJ)</td><td><input type="number" id="renda-prolabore" class="campo-renda" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 1)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-salario-1" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Renda PF</td><td>Salário Líquido (Emprego CLT 2)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-salario-2" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Renda PJ</td><td>Pró-Labore (se houver)</td><td><input type="number" class="calcula-valor" data-category="renda" id="renda-prolabore" placeholder="0.00"></td></tr>
+                    <tr class="total-row"><td></td><td><strong>TOTAL DE RENDAS</strong></td><td><input type="text" id="total-rendas" readonly></td></tr>
+                </tbody>
 
-                    <tr class="category-header"><td colspan="3">2. Despesas Fixas (Pessoa Física)</td></tr>
-                    <tr><td>Moradia</td><td>Aluguel / Financiamento</td><td><input type="number" id="despesa-aluguel" placeholder="0.00"></td></tr>
-                    <tr><td>Contas</td><td>Luz, Água, Gás, Internet</td><td><input type="number" id="despesa-contas" placeholder="0.00"></td></tr>
-                    <tr><td>Saúde</td><td>Planos de Saúde</td><td><input type="number" id="despesa-saude" placeholder="0.00"></td></tr>
-                    <tr><td>Educação</td><td>Mensalidades</td><td><input type="number" id="despesa-educacao" placeholder="0.00"></td></tr>
-
-                    <tr class="category-header"><td colspan="3">3. Despesas Variáveis (Pessoa Física)</td></tr>
-                    <tr><td>Alimentação</td><td>Supermercado / Feira</td><td><input type="number" id="despesa-alimentacao" placeholder="0.00"></td></tr>
-                    <tr><td>Transporte</td><td>Combustível, Apps</td><td><input type="number" id="despesa-transporte" placeholder="0.00"></td></tr>
-                    <tr><td>Lazer</td><td>Restaurantes, Viagens</td><td><input type="number" id="despesa-lazer" placeholder="0.00"></td></tr>
-                    <tr><td>Cuidados</td><td>Academia, Salão</td><td><input type="number" id="despesa-cuidados" placeholder="0.00"></td></tr>
+                <tbody>
+                    <tr class="category-header"><td colspan="3">2. Despesas Pessoais</td></tr>
                     
-                    <tr class="category-header"><td colspan="3">4. Despesas do Consultório (Pessoa Jurídica)</td></tr>
-                    <tr><td>Estrutura</td><td>Aluguel da Sala / Condomínio</td><td><input type="number" id="despesa-pj-estrutura" placeholder="0.00"></td></tr>
-                    <tr><td>Operação</td><td>Salários, Impostos (DAS)</td><td><input type="number" id="despesa-pj-operacao" placeholder="0.00"></td></tr>
-                    <tr><td>Administrativo</td><td>Contabilidade, Softwares</td><td><input type="number" id="despesa-pj-admin" placeholder="0.00"></td></tr>
+                    <!-- REESTRUTURADO: Gastos Essenciais -->
+                    <tr class="subcategory-header" style="background-color: #e6f0f7;"><td colspan="2">Gastos Essenciais</td><td><input type="text" id="subtotal-essenciais" readonly></td></tr>
+                    <tr class="item-detail"><td>Moradia</td><td>Aluguel / Financiamento</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Moradia</td><td>Condomínio</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Contas</td><td>Luz, Água, Gás</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Contas</td><td>Internet, TV, Celular</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Saúde</td><td>Plano de Saúde</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Saúde</td><td>Terapia / Psicólogo</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Alimentação</td><td>Supermercado / Feira</td><td><input type="number" class="calcula-valor" data-group="essenciais" placeholder="0.00"></td></tr>
+
+                    <!-- REESTRUTURADO: Estilo de Vida -->
+                    <tr class="subcategory-header" style="background-color: #faf3e0;"><td colspan="2">Estilo de Vida</td><td><input type="text" id="subtotal-estilo-vida" readonly></td></tr>
+                    <tr class="item-detail"><td>Alimentação</td><td>Restaurantes / Delivery</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Transporte</td><td>Combustível / Manutenção</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Transporte</td><td>Apps (Uber, 99) / Transporte Público</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
+                    <tr class="item-detail"><td>Lazer</td><td>Academia, Hobbies, Compras</td><td><input type="number" class="calcula-valor" data-group="estilo-vida" placeholder="0.00"></td></tr>
+
+                </tbody>
+
+                <tbody>
+                    <tr class="category-header"><td colspan="3">3. Resumo Financeiro</td></tr>
+                    <tr class="total-row" style="background-color: #f8d7da; color: #721c24;"><td></td><td><strong>TOTAL GERAL DE DESPESAS</strong></td><td><input type="text" id="total-despesas" readonly></td></tr>
+                    <tr class="total-row" style="background-color: #d4edda; color: #155724;"><td></td><td><strong>FLUXO DE CAIXA MENSAL (Metas)</strong></td><td><input type="text" id="fluxo-caixa" readonly></td></tr>
                 </tbody>
             </table>
-            <button id="gerar-excel-btn" class="generate-button">Gerar Planilha Excel</button>
+            <button id="gerar-excel-btn" class="generate-button">Gerar Planilha Excel com Resumo</button>
         </section>
 
         <section class="material-section">
-            <h2>Material 2: Modelo de Orçamento 50/30/20</h2>
-            <p>Com os dados do diagnóstico, vamos organizar suas finanças pessoais usando este método simples e poderoso. A ideia é dividir sua renda líquida em três grandes categorias, garantindo equilíbrio entre o presente e o futuro.</p>
-            <div class="budget-container">
-                <div class="budget-card">
-                    <h3>50%</h3>
-                    <h4>Gastos Essenciais</h4>
-                    <p class="budget-value" id="valor-essenciais">R$ 0,00</p>
-                    <ul>
-                        <li>Moradia</li>
-                        <li>Contas de Consumo</li>
-                        <li>Supermercado</li>
-                        <li>Saúde e Educação</li>
-                    </ul>
+            <h2>Material 2: Análise do Orçamento 50/30/20</h2>
+            <p>Veja uma comparação visual de como suas despesas atuais se alinham ao modelo de orçamento 50/30/20, com base na sua renda total.</p>
+            
+            <div class="analysis-container">
+                <div class="chart-container">
+                    <div class="chart">
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" id="bar-atual">
+                                <div class="chart-segment segment-metas" id="segment-atual-metas"></div>
+                                <div class="chart-segment segment-estilo-vida" id="segment-atual-estilo"></div>
+                                <div class="chart-segment segment-essenciais" id="segment-atual-essenciais"></div>
+                            </div>
+                            <div class="chart-label">Sua Situação Atual</div>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar">
+                                <div class="chart-segment segment-metas" style="height: 20%;">20%</div>
+                                <div class="chart-segment segment-estilo-vida" style="height: 30%;">30%</div>
+                                <div class="chart-segment segment-essenciais" style="height: 50%;">50%</div>
+                            </div>
+                            <div class="chart-label">Situação Ideal</div>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-color segment-essenciais"></div>Essenciais</div>
+                        <div class="legend-item"><div class="legend-color segment-estilo-vida"></div>Estilo de Vida</div>
+                        <div class="legend-item"><div class="legend-color segment-metas"></div>Metas</div>
+                    </div>
                 </div>
-                <div class="budget-card">
-                    <h3>30%</h3>
-                    <h4>Estilo de Vida</h4>
-                    <p class="budget-value" id="valor-estilo-vida">R$ 0,00</p>
-                    <ul>
-                        <li>Lazer e Restaurantes</li>
-                        <li>Viagens e Hobbies</li>
-                        <li>Compras</li>
-                        <li>Academia</li>
-                    </ul>
-                </div>
-                <div class="budget-card">
-                    <h3>20%</h3>
-                    <h4>Metas Financeiras</h4>
-                    <p class="budget-value" id="valor-metas">R$ 0,00</p>
-                    <ul>
-                        <li>Reserva de Emergência</li>
-                        <li>Investimentos</li>
-                        <li>Quitação de Dívidas</li>
-                        <li>Aposentadoria</li>
-                    </ul>
+                <div class="comparison-table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Valor Atual</th>
+                                <th>Valor Ideal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Gastos Essenciais</td>
+                                <td id="comp-atual-essenciais">R$ 0,00</td>
+                                <td id="comp-ideal-essenciais">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td>Estilo de Vida</td>
+                                <td id="comp-atual-estilo">R$ 0,00</td>
+                                <td id="comp-ideal-estilo">R$ 0,00</td>
+                            </tr>
+                            <tr>
+                                <td>Metas Financeiras</td>
+                                <td id="comp-atual-metas">R$ 0,00</td>
+                                <td id="comp-ideal-metas">R$ 0,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
         <section class="material-section">
-            <h2>Material 3: Checklist para Separação PF x PJ</h2>
-             <p>Esta é a regra de ouro para o seu sucesso financeiro. Siga este checklist para garantir que as finanças do consultório e as suas finanças pessoais nunca mais se misturem.</p><ul class="checklist"><h3>Ações Imediatas</h3><li>Abrir uma Conta Bancária exclusiva para a PJ.</li><li>Solicitar um Cartão de Crédito exclusivo para a PJ.</li><li>Definir um valor fixo de Pró-Labore (seu salário da PJ).</li><li>Agendar a transferência automática mensal do Pró-Labore (PJ para PF).</li><h3>Monitoramento Contínuo</h3><li>NUNCA pagar uma conta pessoal com recursos da PJ.</li><li>NUNCA pagar uma despesa do consultório com recursos da PF.</li><li>Revisar mensalmente as faturas dos dois cartões.</li><li>Guardar todos os comprovantes e recibos da PJ.</li></ul>
+            <h2>Material 3: Checklist para Organização</h2>
+            <p>Siga estas dicas para manter suas finanças sempre em ordem.</p>
+            <ul class="checklist">
+                <h3>Ações Imediatas</h3>
+                <li>Revisar faturas e extratos dos últimos 3 meses.</li>
+                <li>Definir um dia fixo no mês para pagar contas.</li>
+                <li>Criar pastas (físicas ou digitais) para organizar comprovantes.</li>
+                <h3>Monitoramento Contínuo</h3>
+                <li>Acompanhar o orçamento semanalmente.</li>
+                <li>Reavaliar metas e despesas a cada 3 meses.</li>
+                <li>Evitar compras por impulso e sempre pesquisar preços.</li>
+            </ul>
         </section>
 
         <footer>
@@ -230,80 +353,95 @@
     </div>
 
     <script>
-        // --- LÓGICA 1: CÁLCULO EM TEMPO REAL DO ORÇAMENTO 50/30/20 ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const todosOsInputs = document.querySelectorAll('.calcula-valor');
+            const formatadorMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        // Pega os elementos do HTML que vamos usar (campos de renda e locais para exibir os resultados)
-        const camposRenda = document.querySelectorAll('.campo-renda');
-        const displayEssenciais = document.getElementById('valor-essenciais');
-        const displayEstiloVida = document.getElementById('valor-estilo-vida');
-        const displayMetas = document.getElementById('valor-metas');
+            function atualizarTodosOsCalculos() {
+                let totais = {
+                    renda: 0,
+                    essenciais: 0,
+                    'estilo-vida': 0
+                };
 
-        // Cria um formatador para mostrar os números como dinheiro (R$)
-        const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        });
+                todosOsInputs.forEach(input => {
+                    const valor = parseFloat(input.value) || 0;
+                    const categoria = input.dataset.category;
+                    const grupo = input.dataset.group;
 
-        // Função que faz toda a mágica de calcular e atualizar
-        function calcularOrcamento() {
-            let totalRendas = 0;
-            // Soma o valor de cada campo de renda
-            camposRenda.forEach(campo => {
-                totalRendas += parseFloat(campo.value) || 0;
+                    if (totais.hasOwnProperty(categoria)) totais[categoria] += valor;
+                    if (totais.hasOwnProperty(grupo)) totais[grupo] += valor;
+                });
+
+                const totalRendas = totais.renda;
+                const totalDespesas = totais.essenciais + totais['estilo-vida'];
+                const fluxoDeCaixa = totalRendas - totalDespesas;
+
+                // --- ATUALIZA OS CAMPOS READONLY NA TELA ---
+                document.getElementById('total-rendas').value = formatadorMoeda.format(totalRendas);
+                document.getElementById('subtotal-essenciais').value = formatadorMoeda.format(totais.essenciais);
+                document.getElementById('subtotal-estilo-vida').value = formatadorMoeda.format(totais['estilo-vida']);
+                document.getElementById('total-despesas').value = formatadorMoeda.format(totalDespesas);
+                document.getElementById('fluxo-caixa').value = formatadorMoeda.format(fluxoDeCaixa);
+
+                // --- ATUALIZA O GRÁFICO E A TABELA (MATERIAL 2) ---
+                const idealEssenciais = totalRendas * 0.5;
+                const idealEstiloVida = totalRendas * 0.3;
+                const idealMetas = totalRendas * 0.2;
+                
+                const atualEssenciais = totais.essenciais;
+                const atualEstiloVida = totais['estilo-vida'];
+                const atualMetas = fluxoDeCaixa;
+
+                document.getElementById('comp-atual-essenciais').innerText = formatadorMoeda.format(atualEssenciais);
+                document.getElementById('comp-ideal-essenciais').innerText = formatadorMoeda.format(idealEssenciais);
+                document.getElementById('comp-atual-estilo').innerText = formatadorMoeda.format(atualEstiloVida);
+                document.getElementById('comp-ideal-estilo').innerText = formatadorMoeda.format(idealEstiloVida);
+                document.getElementById('comp-atual-metas').innerText = formatadorMoeda.format(atualMetas);
+                document.getElementById('comp-ideal-metas').innerText = formatadorMoeda.format(idealMetas);
+
+                const percEssenciais = totalRendas > 0 ? (atualEssenciais / totalRendas) * 100 : 0;
+                const percEstiloVida = totalRendas > 0 ? (atualEstiloVida / totalRendas) * 100 : 0;
+                const percMetas = totalRendas > 0 ? (atualMetas / totalRendas) * 100 : 0;
+                
+                const segEssenciais = document.getElementById('segment-atual-essenciais');
+                const segEstilo = document.getElementById('segment-atual-estilo');
+                const segMetas = document.getElementById('segment-atual-metas');
+
+                segEssenciais.style.height = `${Math.max(0, percEssenciais)}%`;
+                segEstilo.style.height = `${Math.max(0, percEstiloVida)}%`;
+                segMetas.style.height = `${Math.max(0, percMetas)}%`;
+
+                // Adiciona o texto de porcentagem dentro dos segmentos
+                segEssenciais.innerText = percEssenciais > 10 ? `${Math.round(percEssenciais)}%` : '';
+                segEstilo.innerText = percEstiloVida > 10 ? `${Math.round(percEstiloVida)}%` : '';
+                segMetas.innerText = percMetas > 10 ? `${Math.round(percMetas)}%` : '';
+            }
+
+            todosOsInputs.forEach(input => {
+                input.addEventListener('input', atualizarTodosOsCalculos);
             });
 
-            // Calcula as porcentagens
-            const valor50 = totalRendas * 0.5;
-            const valor30 = totalRendas * 0.3;
-            const valor20 = totalRendas * 0.2;
+            document.getElementById('gerar-excel-btn').addEventListener('click', function() {
+                const table = document.querySelector('.financial-table');
+                let data = [];
+                for (const tbody of table.tBodies) {
+                    for (const row of tbody.rows) {
+                        const cols = row.cells;
+                        const categoria = cols[0].innerText;
+                        const item = cols[1].innerText;
+                        const input = cols[2].querySelector('input');
+                        const valor = input ? input.value : '';
+                        data.push([categoria, item, valor]);
+                    }
+                }
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Diagnostico Financeiro");
+                XLSX.writeFile(wb, "Diagnostico_Financeiro_Pessoal.xlsx");
+            });
 
-            // Atualiza os valores na tela, já formatados
-            displayEssenciais.innerText = formatadorMoeda.format(valor50);
-            displayEstiloVida.innerText = formatadorMoeda.format(valor30);
-            displayMetas.innerText = formatadorMoeda.format(valor20);
-        }
-
-        // Adiciona um "ouvinte" para cada campo de renda.
-        // A função calcularOrcamento será chamada toda vez que o usuário digitar algo.
-        camposRenda.forEach(campo => {
-            campo.addEventListener('input', calcularOrcamento);
-        });
-
-
-        // --- LÓGICA 2: GERAR A PLANILHA EXCEL ---
-
-        // Adiciona um "ouvinte" ao botão. A função dentro dele só será executada quando o botão for clicado.
-        document.getElementById('gerar-excel-btn').addEventListener('click', function() {
-            
-            // 1. Coleta dos dados: Pega o valor de cada campo de input pelo seu 'id'.
-            const data = [
-                ["Categoria", "Item", "Valor Mensal (R$)"],
-                ["Renda", "Salário Líquido (Emprego CLT 1)", parseFloat(document.getElementById('renda-salario-1').value) || 0],
-                ["Renda", "Salário Líquido (Emprego CLT 2)", parseFloat(document.getElementById('renda-salario-2').value) || 0],
-                ["Renda", "Pró-Labore (Consultório PJ)", parseFloat(document.getElementById('renda-prolabore').value) || 0],
-                [],
-                ["Despesa Fixa PF", "Aluguel / Financiamento", parseFloat(document.getElementById('despesa-aluguel').value) || 0],
-                ["Despesa Fixa PF", "Luz, Água, Gás, Internet", parseFloat(document.getElementById('despesa-contas').value) || 0],
-                ["Despesa Fixa PF", "Planos de Saúde", parseFloat(document.getElementById('despesa-saude').value) || 0],
-                ["Despesa Fixa PF", "Mensalidades", parseFloat(document.getElementById('despesa-educacao').value) || 0],
-                [],
-                ["Despesa Variável PF", "Supermercado / Feira", parseFloat(document.getElementById('despesa-alimentacao').value) || 0],
-                ["Despesa Variável PF", "Combustível, Apps", parseFloat(document.getElementById('despesa-transporte').value) || 0],
-                ["Despesa Variável PF", "Restaurantes, Viagens", parseFloat(document.getElementById('despesa-lazer').value) || 0],
-                ["Despesa Variável PF", "Academia, Salão", parseFloat(document.getElementById('despesa-cuidados').value) || 0],
-                [],
-                ["Despesa PJ", "Aluguel da Sala / Condomínio", parseFloat(document.getElementById('despesa-pj-estrutura').value) || 0],
-                ["Despesa PJ", "Salários, Impostos (DAS)", parseFloat(document.getElementById('despesa-pj-operacao').value) || 0],
-                ["Despesa PJ", "Contabilidade, Softwares", parseFloat(document.getElementById('despesa-pj-admin').value) || 0]
-            ];
-
-            // 2. Criação da Planilha
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, "Diagnostico");
-
-            // 3. Download do Arquivo
-            XLSX.writeFile(wb, "Diagnostico_Financeiro.xlsx");
+            atualizarTodosOsCalculos();
         });
     </script>
 
